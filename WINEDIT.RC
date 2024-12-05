@@ -1,0 +1,220 @@
+#include <windows.h>
+
+#define VK_A	0x41
+#define VK_B	0x42
+#define VK_C	0x43
+#define VK_D	0x44
+#define VK_E	0x45
+#define VK_F	0x46
+#define VK_G	0x47
+#define VK_H	0x48
+#define VK_I	0x49
+#define VK_J	0x4A
+#define VK_K	0x4B
+#define VK_L	0x4C
+#define VK_M	0x4D
+#define VK_N	0x4E
+#define VK_O	0x4F
+#define VK_P	0x50
+#define VK_Q	0x51
+#define VK_R	0x52
+#define VK_S	0x53
+#define VK_T	0x54
+#define VK_U	0x55
+#define VK_V	0x56
+#define VK_W	0x57
+#define VK_X	0x58
+#define VK_Y	0x59
+#define VK_Z	0x5A
+
+
+#include "winedit.h"
+
+MAIN_MENU MENU
+{
+ POPUP "&File"
+ {
+  MENUITEM "&New\tCtrl+N", FILE_NEW
+  MENUITEM "&Open...\tCtrl+O", FILE_OPEN
+  MENUITEM "&Save\tCtrl+S", FILE_SAVE
+  MENUITEM "Save &as...", FILE_SAVE_AS
+  MENUITEM "Save a&ll", FILE_SAVE_ALL
+  MENUITEM SEPARATOR
+  MENUITEM "&Print..", FILE_PRINT
+  MENUITEM SEPARATOR
+  MENUITEM "&Preferences...", FILE_PREFERENCES
+  MENUITEM "&Font...", FILE_FONT
+  MENUITEM SEPARATOR
+  MENUITEM "&Quit\tAlt+X", FILE_QUIT
+  MENUITEM SEPARATOR
+ }
+
+ POPUP "&Edit"
+ {
+  MENUITEM "&Undo\tAlt+Backspace", EDIT_UNDO
+  MENUITEM SEPARATOR
+  MENUITEM "&Cut\tShift+Del", EDIT_CUT
+  MENUITEM "C&opy\tShift+Ins", EDIT_COPY
+  MENUITEM "&Paste\tCtrl+Ins", EDIT_PASTE
+  MENUITEM "C&lear\tDel", EDIT_CLEAR
+  MENUITEM SEPARATOR
+  MENUITEM "Select &All\tCtrl+A", EDIT_SELECT_ALL
+  MENUITEM "&Delete Line\tCtrl+Y", EDIT_DELETE_LINE
+  MENUITEM SEPARATOR
+  MENUITEM "Line CRLF", EDIT_LINE_CRLF
+  MENUITEM "Line LF", EDIT_LINE_LF
+  MENUITEM "Line CR", EDIT_LINE_CR
+  MENUITEM "Line LFCR", EDIT_LINE_LFCR
+  MENUITEM SEPARATOR
+  MENUITEM "ANSI", EDIT_CS_ANSI
+  MENUITEM "UTF-8", EDIT_CS_UTF8
+  MENUITEM "OE&M (Dos)", EDIT_OEM_CONVERT
+  MENUITEM SEPARATOR
+  MENUITEM "&HTML-Entities", EDIT_HTML_ENTITIES
+  MENUITEM SEPARATOR
+  MENUITEM "&Indent\tCtrl+I", EDIT_INDENT
+  MENUITEM "U&nindent\tCtrl+U", EDIT_UNINDENT
+ }
+
+ POPUP "&Search"
+ {
+  MENUITEM "&Search...\tCtrl+F", SEARCH_SEARCH
+  MENUITEM "&Replace...\tCtrl+R", SEARCH_REPLACE
+  MENUITEM "&Next\tCtrl+L", SEARCH_NEXT
+  MENUITEM SEPARATOR
+  MENUITEM "Compare", COMPARE_FILES
+ }
+
+ POPUP "&Window"
+ {
+  MENUITEM "Tile &horizontal", WIN_TILE_HORIZ
+  MENUITEM "Tile &vertical", WIN_TILE_VERT
+  MENUITEM "&Cascade", WIN_CASCADE
+  MENUITEM "&Arange icons", WIN_ARRANGE
+  MENUITEM SEPARATOR
+  MENUITEM "Close A&ll", WIN_CLOSE_ALL
+ }
+
+ POPUP "&Info"
+ {
+  MENUITEM "&About Editor...", INFO_ABOUT
+ }
+
+}
+
+MAIN_MENU ACCELERATORS
+{
+ VK_A, EDIT_SELECT_ALL, VIRTKEY, CONTROL
+ VK_F, SEARCH_SEARCH, VIRTKEY, CONTROL
+ VK_I, EDIT_INDENT, VIRTKEY, CONTROL
+ VK_L, SEARCH_NEXT, VIRTKEY, CONTROL
+ VK_N, FILE_NEW, VIRTKEY, CONTROL
+ VK_O, FILE_OPEN, VIRTKEY, CONTROL
+ VK_R, SEARCH_REPLACE, VIRTKEY, CONTROL
+ VK_S, FILE_SAVE, VIRTKEY, CONTROL
+ VK_U, EDIT_UNINDENT, VIRTKEY, CONTROL
+ VK_X, FILE_QUIT, VIRTKEY, ALT
+ VK_Y, EDIT_DELETE_LINE, VIRTKEY, CONTROL
+}
+
+STRINGTABLE
+{
+ NOREGISTER, "Unable to register window class"
+ NOWINDOW, "Unable to open window"
+ UNTITLED, "Untitled"
+ WARNING, "Warning"
+ CLOSE_ANYWAY, "File %s not saved. Save now?"
+}
+
+STRINGTABLE
+{
+ STYLE_SHEETS, "Cascading Styles(*.css)|*.css|"
+ C_SOURCE_FILES, "C(++)-Source(*.cpp;*.c)|*.cpp;*.c|"
+ CG_CONFIG, "Code Guard Config(*.cgi)|*.cgi|"
+ CG_LOG, "Code Guard Log(*.cgl)|*.cgl|"
+ CONFIG_FILES, "Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|"
+ HEADER_FILES, "Headerfiles(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|"
+ HELP_PROJECTS, "Help Projects(*.hpj)|*.hpj|"
+ HTML_FILES, "HTML Files(*.html;*.htm)|*.html;*.htm|"
+ JAVA_SCRIPTS, "Java-Scripts(*.js)|*.js|"
+ JAVA_FILES, "Java-Source(*.java)|*.java|"
+ LIVELINK_FILES, "Livelink(*.out)|*.out|"
+ MAKE_FILES, "Makefiles(*.mak)|*.mak|"
+ DEF_FILES, "Module Definitionfiles(*.def)|*.def|"
+ BATCH_FILES, "MSDOS-Batch files(*.bat;*.cmd)|*.bat;*.cmd|"
+ OPL_FILES, "OpenUI Source(*.opl)|*.opl|"
+ PASCAL_FILES, "Pascal-Source(*.pas)|*.pas|"
+ PHP_FILES, "PHP-Source(*.php)|*.php|"
+ PROC_FILES, "Pro*C/C++ spource(*.pc)|*.pc|"
+ PROT_FILES, "Protocols(*.log)|*.log|"
+ REGISTRATION_FILES, "Registrations (*.reg)|*.reg|"
+ RESSOURCE_FILES, "Ressource(*.rc)|*.rc|"
+ SQL_SCRIPTS, "SQL Scripts(*.sql)|*.sql|"
+ SYMBOL_TABLES, "Symbol Tables(*.map)|*.map|"
+ TEXT_FILES, "Text files(*.txt)|*.txt|"
+ XML_FILES, "XML files(*.xml)|*.xml|"
+ XSD_FILES, "XML Schema(*.xsd)|*.xsd|"
+ XSL_FILES, "XSL Stylesheets(*.xsl)|*.xsl|"
+ DTD_FILES, "XML Document Type Definitions(*.dtd)|*.dtd|"
+ ALL_FILES, "All files|*.*|"
+}
+
+EDIT_ICON ICON "WinEdit.ico"
+
+FILE_PREFERENCES DIALOG 6, 15, 161, 66
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Preferences"
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "&Auto Indent", IDC_AUTO_INDENT, "button", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 8, 4, 60, 12
+ CONTROL "&Tab width:", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 80, 6, 36, 8
+ CONTROL "", TABWIDTH, "EDIT", ES_LEFT | WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP, 120, 4, 36, 12
+ CONTROL "Create &Backup", CREATE_BACKUP, "BUTTON", BS_AUTOCHECKBOX | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 8, 20, 60, 12
+ CONTROL "&OK", IDOK, "BUTTON", BS_DEFPUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 8, 44, 50, 14
+ CONTROL "&Cancel", IDCANCEL, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 64, 44, 50, 14
+}
+
+INFO_ABOUT DIALOG 18, 18, 183, 135
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "About..."
+FONT 8, "MS Sans Serif"
+{
+ CONTROL "EDIT_ICON", -1, "STATIC", SS_ICON | WS_CHILD | WS_VISIBLE, 141, 38, 21, 20
+ CONTROL "Windows Editor 1.2.0", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 14, 104, 8
+ CONTROL "32/64-Bit", INFO_ADRESS_WIDTH, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 141, 14, 104, 8
+ CONTROL "Copyright © 1995-2024 by", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 26, 124, 8
+ CONTROL "Martin Gäckler", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 38, 48, 8
+ CONTROL "Hofmannsthalweg 14", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 50, 83, 8
+ CONTROL "A-4030 Linz", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 62, 107, 8
+ CONTROL "Phone: +43 - 664 - 54 57 612", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 74, 120, 8
+ CONTROL "E-Mail: martin@gaeckler.at", -1, "STATIC", SS_LEFT | WS_CHILD | WS_VISIBLE | WS_GROUP, 8, 84, 123, 8
+ CONTROL "&OK", IDOK, "BUTTON", BS_PUSHBUTTON | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 68, 116, 46, 14
+ CONTROL "https://www.gaeckler.at/", -1, "static", SS_LEFT | WS_CHILD | WS_VISIBLE, 8, 98, 144, 8
+}
+
+1 VERSIONINFO 
+FILEVERSION 1, 1, 0, 0
+PRODUCTVERSION 1, 1, 0, 0
+FILETYPE VFT_APP
+{
+ BLOCK "StringFileInfo"
+ {
+  BLOCK "040904E4"
+  {
+   VALUE "CompanyName", "CRESD GmbH\000"
+   VALUE "FileDescription", "Windows Editor\000"
+   VALUE "FileVersion", "1.1.0\000"
+   VALUE "InternalName", "WinEdit\000"
+   VALUE "LegalCopyright", "© 1995-2010 by CRESD GmbH\000"
+   VALUE "OriginalFilename", "winedt32.exe\000"
+  }
+
+ }
+
+ BLOCK "VarFileInfo"
+ {
+  VALUE "Translation", 0x409, 1252
+ }
+
+}
+

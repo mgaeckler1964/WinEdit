@@ -201,11 +201,11 @@ FILETYPE VFT_APP
  {
   BLOCK "040904E4"
   {
-   VALUE "CompanyName", "CRESD GmbH\000"
+   VALUE "CompanyName", "Martin Gäckler\000"
    VALUE "FileDescription", "Windows Editor\000"
    VALUE "FileVersion", "1.1.0\000"
    VALUE "InternalName", "WinEdit\000"
-   VALUE "LegalCopyright", "© 1995-2010 by CRESD GmbH\000"
+   VALUE "LegalCopyright", "© 1995-2010 by Martin Gäckler\000"
    VALUE "OriginalFilename", "winedt32.exe\000"
   }
 

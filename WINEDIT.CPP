@@ -1322,7 +1322,7 @@ ProcessStatus WinEditMain::handleMessage( UINT msg, WPARAM, LPARAM atom)
 
 bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 {
-	doDisableLog();
+	doEnableLogEx(gakLogging::llInfo);
 
 	FileTypeRegistry	fType;
 	size_t				i;

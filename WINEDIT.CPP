@@ -348,7 +348,7 @@ WinEditMain::~WinEditMain()
 
 inline SuccessCode WinEditMain::create( int nCmdShow )
 {
-	setTitle( appName );
+	setText( appName );
 	if( MDIwindow::create( MAIN_MENU, WINDOW_MENU ) == scERROR )
 		return scERROR;
 
@@ -1506,7 +1506,7 @@ void WinEdit::deleteMainWindow( BasicWindow  *mainWindow )
 void WinEditChild::htmlEntities( void )
 {
 	unsigned char	c;
-	const char		*cp, *cp2;
+	const char		*cp;
 	bool			inTag = false;
 	bool			inScript = false;
 	bool			inSgml = false;
@@ -1557,8 +1557,18 @@ void WinEditChild::htmlEntities( void )
 		}
 		else if( c == '&' )
 		{
-			for( cp2=cp+1; *cp2 && isalpha( *cp2 ); cp2++ )
-				;
+			const char *cp2=cp+1;
+
+			if( *cp2 == '#' )
+			{
+				for( cp2++; *cp2 && isdigit( *cp2 ); cp2++ )
+					;
+			}
+			else
+			{
+				for( ; *cp2 && isalpha( *cp2 ); cp2++ )
+					;
+			}
 			if( *cp2 != ';' )
 			{
 				newText += "&amp;";
@@ -1671,7 +1681,9 @@ void WinEditMain::openFile( const char *iFileName, EDIT::editCharset charSet )
 		addFile( theFileName, charSet );
 	}
 	else
-		editor->setTitle( UNTITLED );
+	{
+		editor->setText( UNTITLED );
+	}
 
 	doLogValue( theFileName ? theFileName : "NULL" );
 	doLogValue( charSet );

@@ -1682,7 +1682,7 @@ void WinEditMain::openFile( const char *iFileName, EDIT::editCharset charSet )
 	}
 	else
 	{
-		editor->setText( UNTITLED );
+		editor->setTitle( UNTITLED );
 	}
 
 	doLogValue( theFileName ? theFileName : "NULL" );

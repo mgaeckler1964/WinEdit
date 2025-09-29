@@ -1026,7 +1026,7 @@ ProcessStatus PreferencesDlg::handleOk()
 	return psDO_DEFAULT;
 }
 
-void WinEditChild::handleFocus( void )
+void WinEditChild::handleFocus()
 {
 	WinEditMain	*mainWindow = (WinEditMain *)getMDIparent();
 
@@ -1072,29 +1072,28 @@ void WinEditChild::handleFocus( void )
 	}
 }
 
-SuccessCode WinEditChild::handleClose( void )
+SuccessCode WinEditChild::handleClose()
 {
-	int			button;
-	STRING		theText;
-	STRING		theFile;
-	char		text_buff[1024];
-
 	if( isChanged() )
 	{
-		theText = application.loadString( CLOSE_ANYWAY );
-		theFile = getFileName();
-		sprintf( text_buff, theText, !theFile.isEmpty() ? (const char *)theFile : "untitled" );
-		button = messageBox( text_buff, WARNING,
-					MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
+		char	text_buff[1024];
+		STRING	theMessage = application.loadString( CLOSE_ANYWAY );
+		STRING	theFile = getFileName();
+		if( theMessage.size() + theFile.size() >= 1024 )
+		{
+			theFile = STRING("...") + theFile.rightString( 1016 - theMessage.strlen() );
+		}
+		sprintf( text_buff, theMessage, !theFile.isEmpty() ? (const char *)theFile : "untitled" );
+		int button = messageBox( text_buff, WARNING, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
 
 		if( button == IDCANCEL )
-			return scERROR;
+/*@*/		return scERROR;
 
 		if( button == IDYES )
 		{
 			saveToFile();
 			if( isChanged() )
-				return scERROR;
+/*@*/			return scERROR;
 		}
 	}
 
@@ -1289,8 +1288,8 @@ ProcessStatus WinEditMain::ddeExecute( const char *commandPtr )
 
 void WinEditMain::handleTimer()
 {
-	static size_t	lastLine = -1;
-	static size_t	lastColumn = -1;
+	static size_t	lastLine = size_t(-1);
+	static size_t	lastColumn = size_t(-1);
 	static bool		lastModified = false;
 
 	size_t			line, column;
@@ -1327,7 +1326,7 @@ void WinEditMain::handleTimer()
 	else
 	{
 		setStatusText( "Welcome" );
-		lastLine = lastColumn = -1;
+		lastLine = lastColumn = size_t(-1);
 		lastModified = false;
 	}
 }

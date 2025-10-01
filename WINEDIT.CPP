@@ -97,8 +97,11 @@ namespace myProfile
 	static const char FontSize[] = "FontSize";
 	static const char lastCharset[] = "lastCharset";
 	static const char lastFile[] = "lastFile";
+	static const char filename[] = "filename";
 	static const char openFile[] = "openFile";
 	static const char OpenFiles[] = "OpenFiles";
+	static const char selEnd[] = "selEnd";
+	static const char selStart[] = "selStart";
 	static const char Style[] = "Style";
 	static const char tabWidth[] = "tabWidth";
 };
@@ -144,7 +147,13 @@ class WinEditMain : public MDIwindow
 	STRING				m_lastSearchFor;
 	STRING				m_lastReplace;
 
-	typedef Duo<F_STRING,EDIT::EditCharset>	FileSpec;
+	struct FileSpec
+	{
+		F_STRING			filename;
+		EDIT::EditCharset	charset;
+		size_t				selStart, selEnd;
+	};
+
 	FixedArray<FileSpec,MAX_FILE_LIST>		m_lastFiles;
 	size_t				m_numFiles;
 	WORD				m_lastLineMenuItemChecked;
@@ -186,10 +195,11 @@ class WinEditMain : public MDIwindow
 
 	private:
 	void loadFileList();
+	static void saveFileEntry(const char *baseName, unsigned u, const FileSpec &entry);
 	void saveFileList();
 	void addFileEntry( size_t id );
 	void removeFileEntry( size_t id );
-	void addFile( const STRING &fileName, EDIT::EditCharset charset );
+	void addFile( const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd );
 
 	virtual SuccessCode handleClose();
 	virtual ProcessStatus handleCommand( int command );
@@ -207,8 +217,9 @@ class WinEditMain : public MDIwindow
 	~WinEditMain();
 
 	SuccessCode create( int nCmdShow );
-	void openFile( const STRING &fileName, EDIT::EditCharset charSet );
+	void openFile( const STRING &fileName, EDIT::EditCharset charSet=EDIT::csANSI, size_t selStart=0, size_t selEnd=0 );
 	void checkLineEnd( RLINE_ENDS lineEnd );
+	void updateFileMenu( const STRING &fileName, size_t selStart, size_t selEnd );
 };
 
 class WinEdit : public Application
@@ -232,7 +243,7 @@ static WinEdit	application;
 static char appName[] = "WinEdit";
 
 
-struct
+struct FileType
 {
 	const char	*extension;
 	const char	*description;
@@ -345,7 +356,7 @@ WinEditMain::WinEditMain() : MDIwindow( NULL ), m_theFont( this )
 
 	for( size_t i=0; i<MAX_FILE_LIST; i++ )
 	{
-		m_lastFiles[i].val2 = EDIT::csANSI;
+		m_lastFiles[i].charset = EDIT::csANSI;
 	}
 
 	m_numFiles = 0;
@@ -393,37 +404,108 @@ void WinEditMain::loadFileList()
 
 	unsigned			numFiles;
 	STRING				fileName;
-	EDIT::EditCharset	charset;
 
 	for( unsigned u=0; u<MAX_FILE_LIST; ++u )
 	{
 		STRING uStr = formatNumber(u);
 		STRING lastFile = STRING(myProfile::lastFile) + uStr;
-		fileName = application.GetProfile( "", lastFile, (const char *)0 );
-		if( fileName.isEmpty() )
-			break;
 
-		STRING lastCharset =  STRING(myProfile::lastCharset) + uStr;
-		charset = EDIT::EditCharset(application.GetProfile( "", lastCharset, EDIT::csANSI ));
+		fileName = application.GetProfile( lastFile, myProfile::filename, (const char *)0 );
+		if( fileName.isEmpty() )
+		{
+			fileName = application.GetProfile( "", lastFile, (const char *)0 );
+			if( fileName.isEmpty() )
+			{
+				break;
+			}
+			application.DeleteProfile(false, "", lastFile );
+			application.WriteProfile(false, lastFile, myProfile::filename, fileName);
+		}
+
+		EDIT::EditCharset	charset = EDIT::EditCharset(application.GetProfile( lastFile, myProfile::charset, -1 ));
+		if( charset == -1 )
+		{
+			STRING lastCharset =  STRING(myProfile::lastCharset) + uStr;
+			charset = EDIT::EditCharset(application.GetProfile( "", lastCharset, -1 ));
+			if( charset != -1 )
+			{
+				application.DeleteProfile(false, "", lastCharset );
+				application.WriteProfile(false, lastFile, myProfile::charset, charset);
+			}
+			else
+			{
+				charset = EDIT::csANSI;
+			}
+		}
+
 
 		if( !access( fileName, 0 ) )
-			addFile( fileName, charset );
+		{
+			size_t selStart = application.GetProfile( lastFile, myProfile::selStart, 0 );
+			size_t selEnd = application.GetProfile( lastFile, myProfile::selEnd, 0 );
+			addFile( fileName, charset, selStart, selEnd );
+		}
 	}
 
+	bool foundLegacy = false;
 	numFiles = application.GetProfile( "", myProfile::OpenFiles, 0 );
 	for( unsigned u=0; u<numFiles; ++u )
 	{
 		STRING uStr = formatNumber(u);
 		STRING openFileEntry =  STRING(myProfile::openFile) + uStr;
 
-		fileName = application.GetProfile( "", openFileEntry, (const char *)0 );
+		fileName = application.GetProfile( openFileEntry, myProfile::filename, (const char *)0 );
 		if( fileName.isEmpty() )
-			break;
+		{
+			fileName = application.GetProfile( "", openFileEntry, (const char *)0 );
+			if( fileName.isEmpty() )
+				break;
+			foundLegacy = true;
+		}
 
-		STRING charsetEntry =  STRING(myProfile::charset) + uStr;
-		charset = EDIT::EditCharset(application.GetProfile( "", charsetEntry, (long)EDIT::csANSI ));
-		openFile( fileName, charset );
+		EDIT::EditCharset charset = EDIT::EditCharset(application.GetProfile( openFileEntry, myProfile::charset, (long)-1 ));
+		if( charset == -1 )
+		{
+			STRING charsetEntry =  STRING(myProfile::charset) + uStr;
+			charset = EDIT::EditCharset(application.GetProfile( "", charsetEntry, (long)-1 ));
+			if( charset != -1 )
+				foundLegacy = true;
+			else
+				charset = EDIT::csANSI;
+		}
+		size_t selStart = EDIT::EditCharset(application.GetProfile( openFileEntry, myProfile::selStart, 0 ));
+		size_t selEnd = EDIT::EditCharset(application.GetProfile( openFileEntry, myProfile::selEnd, 0 ));
+		openFile( fileName, charset, selStart, selEnd );
 	}
+
+	if( foundLegacy )
+	{
+		unsigned u=0;
+		while( 1 )
+		{
+			STRING uStr = formatNumber(u++);
+			STRING openFileEntry =  STRING(myProfile::openFile) + uStr;
+			STRING charsetEntry =  STRING(myProfile::charset) + uStr;
+
+			STRING fileName = application.GetProfile( "", openFileEntry, (const char *)0 );
+			EDIT::EditCharset charset = EDIT::EditCharset(application.GetProfile( "", charsetEntry, (long)-1 ));
+
+			application.DeleteProfile( false, "", openFileEntry );
+			application.DeleteProfile( false, "", charsetEntry );
+			if( fileName.isEmpty() && charset == -1 )
+				break;
+		}
+	}
+}
+
+void WinEditMain::saveFileEntry(const char *baseName, unsigned u, const FileSpec &entry)
+{
+	STRING regName = STRING(baseName) + formatNumber(u);
+
+	application.WriteProfile( false, regName, myProfile::filename, entry.filename );
+	application.WriteProfile( false, regName, myProfile::charset, entry.charset );
+	application.WriteProfile( false, regName, myProfile::selStart, entry.selStart );
+	application.WriteProfile( false, regName, myProfile::selEnd, entry.selEnd );
 }
 
 void WinEditMain::saveFileList()
@@ -432,13 +514,7 @@ void WinEditMain::saveFileList()
 
 	for( unsigned u=0; u<m_numFiles; u++ )
 	{
-		STRING uStr = formatNumber(u);
-
-		STRING lastFile = STRING(myProfile::lastFile) + uStr;
-		application.WriteProfile( false, "", lastFile, m_lastFiles[u].val1 );
-
-		STRING lastCharset =  STRING(myProfile::lastCharset) + uStr;
-		application.WriteProfile( false, "", lastCharset, m_lastFiles[u].val2 );
+		saveFileEntry(myProfile::lastFile, u, m_lastFiles[u]);
 	}
 
 	unsigned u=0;
@@ -448,13 +524,12 @@ void WinEditMain::saveFileList()
 		fileName = editor->getFileName();
 		if( !fileName.isEmpty() )
 		{
-			STRING uStr = formatNumber(u++);
-
-			STRING openFileEntry =  STRING(myProfile::openFile) + uStr;
-			application.WriteProfile( false, "", openFileEntry, fileName );
-
-			STRING charsetEntry =  STRING(myProfile::charset) + uStr;
-			application.WriteProfile( false, "", charsetEntry, editor->getCharset() );
+			FileSpec openFile = {
+				fileName, 
+				editor->getCharset()
+			};
+			editor->getSelection(&openFile.selStart, &openFile.selEnd );
+			saveFileEntry(myProfile::openFile, u++, openFile);
 		}
 
 		editor = static_cast<WinEditChild *>(getNextChild());
@@ -473,7 +548,7 @@ void WinEditMain::addFileEntry( size_t id )
 	else
 		menuEntry = STRING('&')+ ('0'+int(menuMnemonic));
 	menuEntry += ' ';
-	menuEntry += m_lastFiles[id].val1;
+	menuEntry += m_lastFiles[id].filename;
 
 	getMenu()->addMenuItem( 0, int(MIN_FILE_ID+id), menuEntry );
 }
@@ -492,21 +567,25 @@ void WinEditMain::removeFileEntry( size_t id )
 	--m_numFiles;
 }
 
-void WinEditMain::addFile( const STRING &fileName, EDIT::EditCharset charset )
+void WinEditMain::addFile( const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd )
 {
 	doEnterFunction("WinEditMain::addFile");
 	for( size_t i=0; i<m_numFiles; i++ )
-		if( m_lastFiles[i].val1 == fileName )
+	{
+		if( m_lastFiles[i].filename == fileName )
 		{
 			removeFileEntry( i );
 			break;
 		}
+	}
 
 	if( m_numFiles >= MAX_FILE_LIST )
 		removeFileEntry( 0 );
 
-	m_lastFiles[m_numFiles].val1 = fileName;
-	m_lastFiles[m_numFiles].val2 = charset;
+	m_lastFiles[m_numFiles].filename = fileName;
+	m_lastFiles[m_numFiles].charset = charset;
+	m_lastFiles[m_numFiles].selStart = selStart;
+	m_lastFiles[m_numFiles].selEnd = selEnd;
 	addFileEntry( m_numFiles );
 	m_numFiles++;
 }
@@ -559,7 +638,7 @@ void WinEditMain::openFile()
 	)
 	{
 		application.WriteProfile( false, NULL, myProfile::filterIndex, fileDlg.getFilterIndex() );
-		openFile( fileDlg.getFilename(), EDIT::csANSI );
+		openFile( fileDlg.getFilename() );
 	}
 
 	// save default directory
@@ -636,7 +715,9 @@ void WinEditMain::saveFileAs()
 								C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 ) )
 		{
 			editor->saveToFile( saveDialog.getFilename() );
-			addFile( saveDialog.getFilename(), editor->getCharset() );
+			size_t selStart, selEnd;
+			editor->getSelection(&selStart, &selEnd);
+			addFile( saveDialog.getFilename(), editor->getCharset(), selStart, selEnd );
 			application.WriteProfile( false, NULL, myProfile::filterIndex, saveDialog.getFilterIndex() );
 		}
 	}
@@ -678,9 +759,9 @@ void WinEditMain::changeCharset( EDIT::EditCharset newCharset )
 			STRING theFileName = editor->getFileName();
 			for( int i=0; i<MAX_FILE_LIST; i++ )
 			{
-				if( !strcmpi( theFileName, m_lastFiles[i].val1 ) )
+				if( !strcmpi( theFileName, m_lastFiles[i].filename ) )
 				{
-					m_lastFiles[i].val2 = newCharset;
+					m_lastFiles[i].charset = newCharset;
 					break;
 				}
 			}
@@ -1097,6 +1178,11 @@ SuccessCode WinEditChild::handleClose()
 		}
 	}
 
+	WinEditMain *mainWindows = (WinEditMain *)getMDIparent();
+	size_t selStart, selEnd;
+	getSelection(&selStart, &selEnd);
+	mainWindows->updateFileMenu( getFileName(), selStart, selEnd );
+
 	close();
 	return scSUCCESS;
 }
@@ -1120,7 +1206,7 @@ ProcessStatus WinEditMain::handleCommand( int command )
 	switch( command )
 	{
 	case FILE_NEW:
-		openFile( NULL, EDIT::csANSI );	break;
+		openFile( nullptr );				break;
 	case FILE_OPEN:
 		openFile();							break;
 	case FILE_SAVE:
@@ -1208,12 +1294,15 @@ ProcessStatus WinEditMain::handleCommand( int command )
 		}
 
 	default:
-		if( command >= MIN_FILE_ID
-		&&  command < MIN_FILE_ID+MAX_FILE_LIST
-		&& !m_lastFiles[command-MIN_FILE_ID].val1.isEmpty() )
+		if( command >= MIN_FILE_ID && command < MIN_FILE_ID+MAX_FILE_LIST )
 		{
-			openFile( m_lastFiles[command-MIN_FILE_ID].val1, m_lastFiles[command-MIN_FILE_ID].val2 );
-			break;
+			size_t id = command-MIN_FILE_ID;
+			FileSpec *fs = m_lastFiles.getDataBuffer() + id;
+			if( !fs->filename.isEmpty() )
+			{
+				openFile( fs->filename, fs->charset, fs->selStart,fs->selEnd );
+				break;
+			}
 		}
 
 		return psDO_DEFAULT;
@@ -1223,7 +1312,7 @@ ProcessStatus WinEditMain::handleCommand( int command )
 
 void WinEditMain::handleFile( const char *fileName, size_t, size_t )
 {
-	openFile( fileName, EDIT::csANSI );
+	openFile( fileName );
 }
 
 void WinEditMain::handleFind( const char *text, bool wholeWord, bool matchCase, bool downSearch )
@@ -1279,7 +1368,7 @@ ProcessStatus WinEditMain::ddeExecute( const char *commandPtr )
 {
 	if( !strncmpi( commandPtr, "open ", sizeof( "open " ) -1 ) )
 	{
-		openFile( commandPtr + sizeof( "open" ), EDIT::csANSI );
+		openFile( commandPtr + sizeof( "open" ) );
 		return psPROCESSED;
 	}
 
@@ -1515,7 +1604,7 @@ CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 	}
 
 	if( !fileName.isEmpty() )
-		mainWindow->openFile( fileName, EDIT::csANSI );
+		mainWindow->openFile( fileName );
 
 	return mainWindow;
 }
@@ -1618,7 +1707,7 @@ void WinEditChild::htmlEntities()
 	}
 }
 
-void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet )
+void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, size_t selStart, size_t selEnd )
 {
 	doEnterFunction("WinEditMain::openFile");
 
@@ -1646,9 +1735,9 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet )
 	{
 		for( int i=0; i<MAX_FILE_LIST; i++ )
 		{
-			if( m_lastFiles[i].val1 == theFileName )
+			if( m_lastFiles[i].filename == theFileName )
 			{
-				charSet = m_lastFiles[i].val2;
+				charSet = m_lastFiles[i].charset;
 				break;
 			}
 		}
@@ -1700,7 +1789,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet )
 			doLogPosition();
 			editor->readFromFile( theFileName );
 		}
-		addFile( theFileName, charSet );
+		addFile( theFileName, charSet, selStart, selEnd );
 	}
 	else
 	{
@@ -1710,7 +1799,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet )
 	doLogValue( !theFileName.isEmpty() ? theFileName : F_STRING("NULL") );
 	doLogValue( charSet );
 	editor->setCharset( charSet );
-
+	editor->setSelection( selStart, selEnd );
 	doLogValue( sizeof(RLINE_ENDS) );
 	checkLineEnd( editor->getLineEnd() );
 
@@ -1739,4 +1828,17 @@ void WinEditMain::checkLineEnd( RLINE_ENDS newLineEnd )
 	m_lastLineMenuItemChecked = menuItem;
 }
 
+void WinEditMain::updateFileMenu( const STRING &fileName, size_t selStart, size_t selEnd )
+{
+	for( size_t i=0; i<m_numFiles; ++i )
+	{
+		FileSpec &entry = m_lastFiles[i];
+		if( entry.filename == fileName )
+		{
+			entry.selStart = selStart;
+			entry.selEnd = selEnd;
+			break;
+		}
+	}
+}
 

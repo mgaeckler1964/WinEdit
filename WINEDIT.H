@@ -91,6 +91,7 @@
 #define AUTO_RELOAD			104
 
 #define INFO_ADRESS_WIDTH	502
+#define INFO_WINDOW_VERSION	503
 
 /*
 	strings

@@ -125,6 +125,7 @@ class PreferencesDlg : public ModalDialog
 class AboutDlg : public ModalDialog
 {
 	Label	m_addressWidthLabel;
+	Label	m_windowsVersion;
 
 	private:
 	virtual ProcessStatus handleCreate();
@@ -195,11 +196,12 @@ class WinEditMain : public MDIwindow
 
 	private:
 	void loadFileList();
+	static void loadFileEntry(const char *baseName, const char *legasyCharset, unsigned u, FileSpec *entry, bool *foundLegacy);
 	static void saveFileEntry(const char *baseName, unsigned u, const FileSpec &entry);
 	void saveFileList();
 	void addFileEntry( size_t id );
 	void removeFileEntry( size_t id );
-	void addFile( const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd );
+	void addFile( const FileSpec &fs );
 
 	virtual SuccessCode handleClose();
 	virtual ProcessStatus handleCommand( int command );
@@ -348,7 +350,7 @@ static STRING getDir( STRING pathName )
 // ----- class constructors/destructors -------------------------------- //
 // --------------------------------------------------------------------- //
 
-WinEditMain::WinEditMain() : MDIwindow( NULL ), m_theFont( this )
+WinEditMain::WinEditMain() : MDIwindow( nullptr ), m_theFont( this )
 {
 	m_lastWholeWord = m_lastMatchCase = false;
 	m_lastDownSearch = true;
@@ -395,106 +397,36 @@ inline SuccessCode WinEditMain::create( int nCmdShow )
 }
 
 // --------------------------------------------------------------------- //
-// ----- class privates ------------------------------------------------ //
+// ----- class static functions ---------------------------------------- //
 // --------------------------------------------------------------------- //
 
-void WinEditMain::loadFileList()
+void WinEditMain::loadFileEntry(const char *baseName, const char *legasyCharset, unsigned u, FileSpec *entry, bool *foundLegacy)
 {
-	doEnterFunction("WinEditMain::loadFileList");
+	STRING fileName;
+	STRING uStr = formatNumber(u);
+	STRING regName = STRING(baseName) + uStr;
 
-	unsigned			numFiles;
-	STRING				fileName;
-
-	for( unsigned u=0; u<MAX_FILE_LIST; ++u )
+	entry->filename = application.GetProfile( nullptr, regName, fileName );
+	if( !entry->filename.isEmpty() )
 	{
-		STRING uStr = formatNumber(u);
-		STRING lastFile = STRING(myProfile::lastFile) + uStr;
+		STRING charsetName = STRING(legasyCharset) + uStr;
+		entry->charset = EDIT::EditCharset(application.GetProfile( nullptr, charsetName, EDIT::csANSI ));
+		entry->selStart = entry->selEnd = 0;
 
-		fileName = application.GetProfile( lastFile, myProfile::filename, (const char *)0 );
-		if( fileName.isEmpty() )
-		{
-			fileName = application.GetProfile( "", lastFile, (const char *)0 );
-			if( fileName.isEmpty() )
-			{
-				break;
-			}
-			application.DeleteProfile(false, "", lastFile );
-			application.WriteProfile(false, lastFile, myProfile::filename, fileName);
-		}
+		application.DeleteProfile(false, "", regName );
+		application.DeleteProfile(false, "", charsetName );
 
-		EDIT::EditCharset	charset = EDIT::EditCharset(application.GetProfile( lastFile, myProfile::charset, -1 ));
-		if( charset == -1 )
-		{
-			STRING lastCharset =  STRING(myProfile::lastCharset) + uStr;
-			charset = EDIT::EditCharset(application.GetProfile( "", lastCharset, -1 ));
-			if( charset != -1 )
-			{
-				application.DeleteProfile(false, "", lastCharset );
-				application.WriteProfile(false, lastFile, myProfile::charset, charset);
-			}
-			else
-			{
-				charset = EDIT::csANSI;
-			}
-		}
+		application.WriteProfile( false, regName, myProfile::filename, entry->filename );
+		application.WriteProfile( false, regName, myProfile::charset, entry->charset );
 
-
-		if( !access( fileName, 0 ) )
-		{
-			size_t selStart = application.GetProfile( lastFile, myProfile::selStart, 0 );
-			size_t selEnd = application.GetProfile( lastFile, myProfile::selEnd, 0 );
-			addFile( fileName, charset, selStart, selEnd );
-		}
+		*foundLegacy = true;
 	}
-
-	bool foundLegacy = false;
-	numFiles = application.GetProfile( "", myProfile::OpenFiles, 0 );
-	for( unsigned u=0; u<numFiles; ++u )
+	else
 	{
-		STRING uStr = formatNumber(u);
-		STRING openFileEntry =  STRING(myProfile::openFile) + uStr;
-
-		fileName = application.GetProfile( openFileEntry, myProfile::filename, (const char *)0 );
-		if( fileName.isEmpty() )
-		{
-			fileName = application.GetProfile( "", openFileEntry, (const char *)0 );
-			if( fileName.isEmpty() )
-				break;
-			foundLegacy = true;
-		}
-
-		EDIT::EditCharset charset = EDIT::EditCharset(application.GetProfile( openFileEntry, myProfile::charset, (long)-1 ));
-		if( charset == -1 )
-		{
-			STRING charsetEntry =  STRING(myProfile::charset) + uStr;
-			charset = EDIT::EditCharset(application.GetProfile( "", charsetEntry, (long)-1 ));
-			if( charset != -1 )
-				foundLegacy = true;
-			else
-				charset = EDIT::csANSI;
-		}
-		size_t selStart = EDIT::EditCharset(application.GetProfile( openFileEntry, myProfile::selStart, 0 ));
-		size_t selEnd = EDIT::EditCharset(application.GetProfile( openFileEntry, myProfile::selEnd, 0 ));
-		openFile( fileName, charset, selStart, selEnd );
-	}
-
-	if( foundLegacy )
-	{
-		unsigned u=0;
-		while( 1 )
-		{
-			STRING uStr = formatNumber(u++);
-			STRING openFileEntry =  STRING(myProfile::openFile) + uStr;
-			STRING charsetEntry =  STRING(myProfile::charset) + uStr;
-
-			STRING fileName = application.GetProfile( "", openFileEntry, (const char *)0 );
-			EDIT::EditCharset charset = EDIT::EditCharset(application.GetProfile( "", charsetEntry, (long)-1 ));
-
-			application.DeleteProfile( false, "", openFileEntry );
-			application.DeleteProfile( false, "", charsetEntry );
-			if( fileName.isEmpty() && charset == -1 )
-				break;
-		}
+		entry->filename = application.GetProfile( regName, myProfile::filename, entry->filename );
+		entry->charset = EDIT::EditCharset(application.GetProfile( regName, myProfile::charset, EDIT::csANSI ));
+		entry->selStart = application.GetProfile( regName, myProfile::selStart, 0 );
+		entry->selEnd = application.GetProfile( regName, myProfile::selEnd, 0 );
 	}
 }
 
@@ -506,6 +438,56 @@ void WinEditMain::saveFileEntry(const char *baseName, unsigned u, const FileSpec
 	application.WriteProfile( false, regName, myProfile::charset, entry.charset );
 	application.WriteProfile( false, regName, myProfile::selStart, entry.selStart );
 	application.WriteProfile( false, regName, myProfile::selEnd, entry.selEnd );
+}
+
+// --------------------------------------------------------------------- //
+// ----- class privates ------------------------------------------------ //
+// --------------------------------------------------------------------- //
+
+void WinEditMain::loadFileList()
+{
+	doEnterFunction("WinEditMain::loadFileList");
+
+	for( unsigned u=0; u<MAX_FILE_LIST; ++u )
+	{
+		FileSpec	fs;
+		bool		dummy;
+		loadFileEntry(myProfile::lastFile, myProfile::lastCharset, u, &fs, &dummy);
+
+		if( !access( fs.filename, 0 ) )
+		{
+			addFile( fs );
+		}
+	}
+
+	bool		foundLegacy = false;
+	unsigned	numFiles = application.GetProfile( nullptr, myProfile::OpenFiles, 0 );
+	for( unsigned u=0; u<numFiles; ++u )
+	{
+		FileSpec fs;
+		loadFileEntry(myProfile::openFile, myProfile::charset, u, &fs, &foundLegacy);
+
+		openFile( fs.filename, fs.charset, fs.selStart, fs.selEnd );
+	}
+
+	if( foundLegacy )
+	{
+		unsigned u=numFiles;
+		while( 1 )
+		{
+			STRING uStr = formatNumber(u++);
+			STRING openFileEntry =  STRING(myProfile::openFile) + uStr;
+			STRING charsetEntry =  STRING(myProfile::charset) + uStr;
+
+			STRING fileName = application.GetProfile( nullptr, openFileEntry, (const char *)0 );
+			EDIT::EditCharset charset = EDIT::EditCharset(application.GetProfile( nullptr, charsetEntry, (long)-1 ));
+
+			application.DeleteProfile( false, "", openFileEntry );
+			application.DeleteProfile( false, "", charsetEntry );
+			if( fileName.isEmpty() && charset == -1 )
+				break;
+		}
+	}
 }
 
 void WinEditMain::saveFileList()
@@ -567,12 +549,14 @@ void WinEditMain::removeFileEntry( size_t id )
 	--m_numFiles;
 }
 
-void WinEditMain::addFile( const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd )
+void WinEditMain::addFile( const FileSpec &fs )
 {
+	// const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd
+
 	doEnterFunction("WinEditMain::addFile");
 	for( size_t i=0; i<m_numFiles; i++ )
 	{
-		if( m_lastFiles[i].filename == fileName )
+		if( m_lastFiles[i].filename == fs.filename )
 		{
 			removeFileEntry( i );
 			break;
@@ -582,10 +566,7 @@ void WinEditMain::addFile( const STRING &fileName, EDIT::EditCharset charset, si
 	if( m_numFiles >= MAX_FILE_LIST )
 		removeFileEntry( 0 );
 
-	m_lastFiles[m_numFiles].filename = fileName;
-	m_lastFiles[m_numFiles].charset = charset;
-	m_lastFiles[m_numFiles].selStart = selStart;
-	m_lastFiles[m_numFiles].selEnd = selEnd;
+	m_lastFiles[m_numFiles] = fs;
 	addFileEntry( m_numFiles );
 	m_numFiles++;
 }
@@ -597,7 +578,7 @@ void WinEditMain::createBackup( const STRING &fileName )
 	size_t	slash;
 	size_t	dot;
 
-	backupFlag = application.GetProfile( "", myProfile::backup, true );
+	backupFlag = application.GetProfile( nullptr, myProfile::backup, true );
 	if( backupFlag )
 	{
 		backupFile = fileName;
@@ -619,32 +600,28 @@ void WinEditMain::createBackup( const STRING &fileName )
 void WinEditMain::openFile()
 {
 	OpenFileDialog	fileDlg;
-	char			fileName[1024];
-
-	STRING			directory;
+	char			tmpBuff[1024];
 
 	// find default directory
-	getcwd( fileName, sizeof( fileName ) );
-	directory = fileName;
-	directory = application.GetProfile( NULL, myProfile::directory, directory );
+	getcwd( tmpBuff, sizeof( tmpBuff ) );
+	STRING	directory = application.GetProfile( nullptr, myProfile::directory, tmpBuff );
 	setcwd( directory );
 
 	// restore last filter used
-	fileDlg.setFilterIndex( application.GetProfile( NULL, myProfile::filterIndex, 1 ) );
-	fileDlg.setFilename( fileName );
+	fileDlg.setFilterIndex( application.GetProfile( nullptr, myProfile::filterIndex, 1 ) );
+	fileDlg.setDirectory( directory );
 	if( fileDlg.create( this,
 						0,
 						C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 )
 	)
 	{
-		application.WriteProfile( false, NULL, myProfile::filterIndex, fileDlg.getFilterIndex() );
+		application.WriteProfile( false, nullptr, myProfile::filterIndex, fileDlg.getFilterIndex() );
 		openFile( fileDlg.getFilename() );
 	}
 
 	// save default directory
-	getcwd( fileName, sizeof( fileName ) );
-	directory = fileName;
-	application.WriteProfile( false, NULL, myProfile::directory, directory );
+	getcwd( tmpBuff, sizeof( tmpBuff ) );
+	application.WriteProfile( false, nullptr, myProfile::directory, tmpBuff );
 }
 
 void WinEditMain::saveFile()
@@ -707,7 +684,7 @@ void WinEditMain::saveFileAs()
 		else
 			*fileName = 0;
 
-		saveDialog.setFilterIndex( application.GetProfile( NULL, myProfile::filterIndex, 1 ) );
+		saveDialog.setFilterIndex( application.GetProfile( nullptr, myProfile::filterIndex, 1 ) );
 
 		saveDialog.setFilename( fileName );
 		if( saveDialog.create( this,
@@ -715,10 +692,12 @@ void WinEditMain::saveFileAs()
 								C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 ) )
 		{
 			editor->saveToFile( saveDialog.getFilename() );
-			size_t selStart, selEnd;
-			editor->getSelection(&selStart, &selEnd);
-			addFile( saveDialog.getFilename(), editor->getCharset(), selStart, selEnd );
-			application.WriteProfile( false, NULL, myProfile::filterIndex, saveDialog.getFilterIndex() );
+			FileSpec fs = {
+				saveDialog.getFilename(), editor->getCharset()
+			};
+			editor->getSelection(&fs.selStart, &fs.selEnd);
+			addFile( fs );
+			application.WriteProfile( false, nullptr, myProfile::filterIndex, saveDialog.getFilterIndex() );
 		}
 	}
 }
@@ -825,9 +804,9 @@ void WinEditMain::preferences()
 
 	if( dialog.create( FILE_PREFERENCES, this  ) )
 	{
-		bool autoIndentFlag = application.GetProfile( "", myProfile::autoIndent, true );
-		bool autoReloadFlag = application.GetProfile( "", myProfile::autoReload, false );
-		tabWidth = (unsigned int)application.GetProfile( "", myProfile::tabWidth, 4 );
+		bool autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
+		bool autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
+		tabWidth = (unsigned int)application.GetProfile( nullptr, myProfile::tabWidth, 4 );
 		WinEditChild	*editor = static_cast<WinEditChild *>(getFirstChild());
 		if( editor ) do
 		{
@@ -1054,6 +1033,14 @@ ProcessStatus AboutDlg::handleCreate()
 {
 	m_addressWidthLabel.initHandle(this, INFO_ADRESS_WIDTH);
 	m_addressWidthLabel.setText( sizeof(void*)==4 ? "32-Bit" : "64 Bit");
+
+	m_windowsVersion.initHandle( this, INFO_WINDOW_VERSION );
+	DWORD version = GetVersion();
+	gak::uint8 major = gak::uint8(LOBYTE(LOWORD(version)));
+	gak::uint8 minor = gak::uint8(HIBYTE(LOWORD(version)));
+	gak::uint16 build = version < 0x80000000 ? gak::uint16(HIWORD(version)) : 0; 
+	m_windowsVersion.setText(formatNumber(major)+'.'+formatNumber(minor)+'.'+formatNumber(build));
+
 	return psPROCESSED;
 }
 
@@ -1066,21 +1053,21 @@ ProcessStatus PreferencesDlg::handleCreate()
 	autoIndent.initHandle( this, IDC_AUTO_INDENT );
 	autoReload.initHandle( this, AUTO_RELOAD );
 
-	tabwidth.setText(formatNumber(application.GetProfile( "", myProfile::tabWidth, 4)));
+	tabwidth.setText(formatNumber(application.GetProfile( nullptr, myProfile::tabWidth, 4)));
 
-	backupFlag = application.GetProfile( "", myProfile::backup, true );
+	backupFlag = application.GetProfile( nullptr, myProfile::backup, true );
 	if( backupFlag )
 		backup.setActive();
 	else
 		backup.clrActive();
 
-	autoIndentFlag = application.GetProfile( "", myProfile::autoIndent, true );
+	autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
 	if( autoIndentFlag )
 		autoIndent.setActive();
 	else
 		autoIndent.clrActive();
 
-	autoReloadFlag = application.GetProfile( "", myProfile::autoReload, false );
+	autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
 	if( autoReloadFlag )
 		autoReload.setActive();
 	else
@@ -1321,7 +1308,7 @@ void WinEditMain::handleFind( const char *text, bool wholeWord, bool matchCase, 
 	m_lastWholeWord = wholeWord;
 	m_lastMatchCase = matchCase;
 	m_lastDownSearch = downSearch;
-	m_lastReplace   = (char *)NULL;
+	m_lastReplace   = nullptr;
 
 	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
 	if( editor )
@@ -1599,8 +1586,8 @@ CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 	mainWindow = new WinEditMain;
 	if( mainWindow->create( nCmdShow ) == scERROR )
 	{
-		MessageBox( NULL, "Cannot Create Window", "Error", MB_ICONSTOP|MB_OK );
-/*@*/	return NULL;
+		MessageBox( nullptr, "Cannot Create Window", "Error", MB_ICONSTOP|MB_OK );
+/*@*/	return nullptr;
 	}
 
 	if( !fileName.isEmpty() )
@@ -1711,7 +1698,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 {
 	doEnterFunction("WinEditMain::openFile");
 
-	WinEditChild	*editor=NULL;
+	WinEditChild	*editor=nullptr;
 	F_STRING		curFileName;
 	unsigned int	tabWidth;
 	bool			newWindow = false;
@@ -1721,9 +1708,9 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 	if( !m_theFont.isAssigned() )
 	{
 		m_theFont.setFixedFont();
-		m_theFont.setFontName( application.GetProfile( "", myProfile::Font, "Fixedsys" ) );
-		m_theFont.setFontSize( application.GetProfile( "", myProfile::FontSize, 9 ) );
-		m_theFont.setStyle( application.GetProfile( "", myProfile::Style, 0 ) );
+		m_theFont.setFontName( application.GetProfile( nullptr, myProfile::Font, "Fixedsys" ) );
+		m_theFont.setFontSize( application.GetProfile( nullptr, myProfile::FontSize, 9 ) );
+		m_theFont.setStyle( application.GetProfile( nullptr, myProfile::Style, 0 ) );
 		m_theFont.create();
 	}
 
@@ -1759,16 +1746,16 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 		if( m_theFont.isAssigned() )
 			editor->setFont( m_theFont );
 
-		tabWidth = (unsigned int)application.GetProfile( "", myProfile::tabWidth, 4 );
+		tabWidth = (unsigned int)application.GetProfile( nullptr, myProfile::tabWidth, 4 );
 
 		editor->setTabWidth( tabWidth );
-		bool autoIndentFlag = application.GetProfile( "", myProfile::autoIndent, true );
+		bool autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
 		if( autoIndentFlag )
 			editor->setAutoIndent();
 		else
 			editor->clrAutoIndent();
 
-		bool autoReloadFlag = application.GetProfile( "", myProfile::autoReload, false );
+		bool autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
 		if( autoReloadFlag )
 			editor->enableAutoReload();
 		else
@@ -1789,7 +1776,10 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 			doLogPosition();
 			editor->readFromFile( theFileName );
 		}
-		addFile( theFileName, charSet, selStart, selEnd );
+		FileSpec fs = {
+			theFileName, charSet, selStart, selEnd
+		};
+		addFile( fs );
 	}
 	else
 	{

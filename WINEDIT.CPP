@@ -166,7 +166,7 @@ class WinEditMain : public MDIwindow
 	void saveFile();
 	void saveAllFiles();
 	void saveFileAs();
-	void changeCharset( EDIT::EditCharset newCharset );
+	void changeCharset( EDIT::EditCharset newCharset, bool flipBOM=false );
 	void htmlEntities();
 	void closeAll();
 
@@ -702,7 +702,7 @@ void WinEditMain::saveFileAs()
 	}
 }
 
-void WinEditMain::changeCharset( EDIT::EditCharset newCharset )
+void WinEditMain::changeCharset( EDIT::EditCharset newCharset, bool flipBOM )
 {
 	doEnterFunction("WinEditMain::changeCharset");
 
@@ -712,6 +712,32 @@ void WinEditMain::changeCharset( EDIT::EditCharset newCharset )
 	if( editor )
 	{
 		oldCharset = editor->getCharset();
+		if( newCharset != EDIT::csUTF8 )
+		{
+			editor->withBOM() = false;
+			getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+		}
+		else if(flipBOM)
+		{
+			if( oldCharset != EDIT::csUTF8 )
+			{
+				editor->withBOM() = true;
+				getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM );
+			}
+			else
+			{
+				if( editor->withBOM() )
+				{
+					editor->withBOM() = false;
+					getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+				}
+				else
+				{
+					editor->withBOM() = true;
+					getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM );
+				}
+			}
+		}
 		if( oldCharset != newCharset )
 		{
 			SHORT	kState = GetKeyState( VK_SHIFT );
@@ -1111,9 +1137,22 @@ void WinEditChild::handleFocus()
 		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_ANSI );
 
 	if( charSet == EDIT::csUTF8 )
+	{
 		mainWindow->getMenu()->checkMenuItem( EDIT_CS_UTF8 );
+		if( withBOM() )
+		{
+			mainWindow->getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM );
+		}
+		else
+		{
+			mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+		}
+	}
 	else
+	{
 		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8 );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+	}
 
 	if( isLineBreak() )
 		mainWindow->getMenu()->checkMenuItem( EDIT_BREAK );
@@ -1242,6 +1281,8 @@ ProcessStatus WinEditMain::handleCommand( int command )
 		changeCharset( EDIT::csANSI );		break;
 	case EDIT_CS_UTF8:
 		changeCharset( EDIT::csUTF8 );		break;
+	case EDIT_CS_UTF8_BOM:
+		changeCharset(EDIT::csUTF8,true);	break;
 	case EDIT_HTML_ENTITIES:
 		htmlEntities();						break;
 
@@ -1775,6 +1816,10 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 		{
 			doLogPosition();
 			editor->readFromFile( theFileName );
+			if( editor->getCharset() == EDIT::csUTF8 )
+			{
+				charSet = EDIT::csUTF8;
+			}
 		}
 		FileSpec fs = {
 			theFileName, charSet, selStart, selEnd

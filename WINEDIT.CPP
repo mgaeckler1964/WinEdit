@@ -49,6 +49,7 @@
 #include <gak/directory.h>
 #include <gak/ensemble.h>
 
+#include <WINLIB/WINLIB.H>
 #include <winlib/winapp.h>
 #include <winlib/mdiwin.h>
 #include <winlib/editchld.h>
@@ -124,8 +125,7 @@ class PreferencesDlg : public ModalDialog
 
 class AboutDlg : public ModalDialog
 {
-	Label	m_addressWidthLabel;
-	Label	m_windowsVersion;
+	Label	m_windowsWidthLabel;
 
 	private:
 	virtual ProcessStatus handleCreate();
@@ -1057,15 +1057,8 @@ void WinEditMain::compareFiles()
 
 ProcessStatus AboutDlg::handleCreate()
 {
-	m_addressWidthLabel.initHandle(this, INFO_ADRESS_WIDTH);
-	m_addressWidthLabel.setText( sizeof(void*)==4 ? "32-Bit" : "64 Bit");
-
-	m_windowsVersion.initHandle( this, INFO_WINDOW_VERSION );
-	DWORD version = GetVersion();
-	gak::uint8 major = gak::uint8(LOBYTE(LOWORD(version)));
-	gak::uint8 minor = gak::uint8(HIBYTE(LOWORD(version)));
-	gak::uint16 build = version < 0x80000000 ? gak::uint16(HIWORD(version)) : 0; 
-	m_windowsVersion.setText(formatNumber(major)+'.'+formatNumber(minor)+'.'+formatNumber(build));
+	m_windowsWidthLabel.initHandle(this, INFO_WINDOWS_WIDTH);
+	m_windowsWidthLabel.setText( getWindowsWidth() );
 
 	return psPROCESSED;
 }

@@ -91,8 +91,7 @@
 #define IDC_AUTO_INDENT		103
 #define AUTO_RELOAD			104
 
-#define INFO_ADRESS_WIDTH	502
-#define INFO_WINDOW_VERSION	503
+#define INFO_WINDOWS_WIDTH	502
 
 /*
 	strings

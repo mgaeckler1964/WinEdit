@@ -1803,7 +1803,10 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 	if( !theFileName.isEmpty() )
 	{
 		if( strAccess( theFileName, 02 ) )
+		{
 			editor->setReadonly();
+			editor->setBackgroundColorByRef(colors::LIGHT_SALMON);
+		}
 
 		if( newWindow || editor->isChanged() || editor->checkModifyTime() )
 		{

@@ -56,6 +56,7 @@
 #include <winlib/dialogwi.h>
 #include <winlib/stddlg.h>
 #include <winlib/f_type.h>
+#include <winlib/colors.h>
 
 #include "winedit.h"
 

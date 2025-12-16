@@ -68,6 +68,7 @@
 #define EDIT_CS_ANSI		217
 #define EDIT_CS_UTF8		218
 #define EDIT_CS_UTF8_BOM	219
+#define EDIT_READ_ONLY		220
 
 #define SEARCH_SEARCH		301
 #define SEARCH_REPLACE		302

@@ -139,6 +139,7 @@ class WinEditChild : public EditChild
 
 	public:
 	void htmlEntities();
+	void changeReadOnly();
 };
 
 class WinEditMain : public MDIwindow
@@ -162,6 +163,7 @@ class WinEditMain : public MDIwindow
 	Font				m_theFont;
 
 	private:
+	void checkAllFiles();
 	void createBackup( const STRING &fileName );
 	void openFile();
 	void saveFile();
@@ -172,6 +174,7 @@ class WinEditMain : public MDIwindow
 	void closeAll();
 
 	void changeLineEnd( RLINE_ENDS newLineEnd );
+	void changeReadOnly();
 
 	void preferences();
 	void selectFont();
@@ -598,10 +601,36 @@ void WinEditMain::createBackup( const STRING &fileName )
 	}
 }
 
+void WinEditMain::checkAllFiles()
+{
+	WinEditChild	*editor = static_cast<WinEditChild *>(getFirstChild());
+	while( editor )
+	{
+		STRING	fileName = editor->getFileName();
+
+		if( !fileName.isEmpty() )
+		{
+			int errCode = strAccess( fileName, 02 );
+			if( errCode && editor->isEditable() )
+			{
+				editor->setReadonly();
+				editor->setBackgroundColorByRef(colors::LIGHT_SALMON);
+			}
+			else if( !errCode && !editor->isEditable() )
+			{
+				editor->setEditable();
+				editor->setBackgroundColorByRef(colors::WHITE);
+			}
+		}
+
+		editor = static_cast<WinEditChild *>(getNextChild());
+	}
+}
+
 void WinEditMain::openFile()
 {
 	OpenFileDialog	fileDlg;
-	char			tmpBuff[1024];
+	char			tmpBuff[10240];
 
 	// find default directory
 	getcwd( tmpBuff, sizeof( tmpBuff ) );
@@ -791,6 +820,15 @@ void WinEditMain::changeLineEnd( RLINE_ENDS newLineEnd )
 	{
 		editor->setLineEnd( newLineEnd );
 		checkLineEnd( newLineEnd );
+	}
+}
+
+void WinEditMain::changeReadOnly()
+{
+	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
+	if( editor )
+	{
+		editor->changeReadOnly();
 	}
 }
 
@@ -1153,6 +1191,11 @@ void WinEditChild::handleFocus()
 	else
 		mainWindow->getMenu()->uncheckMenuItem( EDIT_BREAK );
 
+	if( !isEditable() )
+		mainWindow->getMenu()->checkMenuItem( EDIT_READ_ONLY );
+	else
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_READ_ONLY );
+
 	mainWindow->checkLineEnd( getLineEnd() );
 
 	ManagerChild::handleFocus();
@@ -1288,6 +1331,8 @@ ProcessStatus WinEditMain::handleCommand( int command )
 		changeLineEnd(RL_END_LF);			break;
 	case EDIT_LINE_LFCR:
 		changeLineEnd(RL_END_LFCR);			break;
+	case EDIT_READ_ONLY:
+		changeReadOnly();					break;
 
 	case SEARCH_SEARCH:
 		searchText();						break;
@@ -1410,6 +1455,8 @@ void WinEditMain::handleTimer()
 	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
 	if( editor )
 	{
+		checkAllFiles();
+
 		editor->getCursorPosition( &line, &column );
 		modified = editor->isChanged();
 
@@ -1639,6 +1686,30 @@ void WinEdit::deleteMainWindow( BasicWindow  *mainWindow )
 // --------------------------------------------------------------------- //
 // ----- class publics ------------------------------------------------- //
 // --------------------------------------------------------------------- //
+
+void WinEditChild::changeReadOnly()
+{
+	STRING fileName = getFileName();
+	if( !fileName.isEmpty() )
+	{
+		unsigned long attr = GetFileAttributes( fileName );
+		if( attr & FILE_ATTRIBUTE_READONLY )
+		{
+			attr &= ~FILE_ATTRIBUTE_READONLY;
+			setEditable();
+			setBackgroundColorByRef(colors::WHITE);
+		}
+		else if( !isChanged() )
+		{
+			attr |= FILE_ATTRIBUTE_READONLY;
+			setReadonly();
+			setBackgroundColorByRef(colors::LIGHT_SALMON);
+		}
+		SetFileAttributes( fileName, attr );
+		handleFocus();
+	}
+}
+
 void WinEditChild::htmlEntities()
 {
 	unsigned char	c;
@@ -1828,13 +1899,9 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 		editor->setTitle( UNTITLED );
 	}
 
-	doLogValue( !theFileName.isEmpty() ? theFileName : F_STRING("NULL") );
-	doLogValue( charSet );
 	editor->setCharset( charSet );
 	editor->setSelection( selStart, selEnd );
-	doLogValue( sizeof(RLINE_ENDS) );
 	checkLineEnd( editor->getLineEnd() );
-
 
 	handleFocus();
 }

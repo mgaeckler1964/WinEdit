@@ -272,6 +272,7 @@ struct FileType
 	{ "jav", "Java Source" },
 	{ "java", "Java Source" },
 	{ "map", "Linker Symbol Table" },
+	{ "md", "GIT Readme" },
 	{ "out", "Livelink Protocol" },
 	{ "mak", "Makefile" },
 	{ "def", "Module definition file" },
@@ -440,8 +441,8 @@ void WinEditMain::saveFileEntry(const char *baseName, unsigned u, const FileSpec
 
 	application.WriteProfile( false, regName, myProfile::filename, entry.filename );
 	application.WriteProfile( false, regName, myProfile::charset, entry.charset );
-	application.WriteProfile( false, regName, myProfile::selStart, entry.selStart );
-	application.WriteProfile( false, regName, myProfile::selEnd, entry.selEnd );
+	application.WriteProfile( false, regName, myProfile::selStart, long(entry.selStart) );
+	application.WriteProfile( false, regName, myProfile::selEnd, long(entry.selEnd) );
 }
 
 // --------------------------------------------------------------------- //
@@ -450,7 +451,7 @@ void WinEditMain::saveFileEntry(const char *baseName, unsigned u, const FileSpec
 
 void WinEditMain::loadFileList()
 {
-	doEnterFunction("WinEditMain::loadFileList");
+	doEnterFunctionEx(gakLogging::llInfo, "WinEditMain::loadFileList");
 
 	for( unsigned u=0; u<MAX_FILE_LIST; ++u )
 	{
@@ -1506,6 +1507,7 @@ ProcessStatus WinEditMain::handleMessage( UINT msg, WPARAM, LPARAM atom)
 bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 {
 	doEnableLogEx(gakLogging::llInfo);
+	doEnterFunctionEx(gakLogging::llInfo, "WinEdit::startApplication" );
 
 	FileTypeRegistry	fType;
 	size_t				i;
@@ -1551,6 +1553,8 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 				fType.type += "_file";
 			}
 
+			doLogValueEx( gakLogging::llInfo, fType.type_description );
+			doLogValueEx( gakLogging::llInfo, fTypes[i].description );
 			if( !fType.type_description[0U] )
 				fType.type_description = fTypes[i].description;
 

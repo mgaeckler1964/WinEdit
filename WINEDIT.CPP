@@ -200,7 +200,7 @@ class WinEditMain : public MDIwindow
 
 	private:
 	void loadFileList();
-	static void loadFileEntry(const char *baseName, const char *legasyCharset, unsigned u, FileSpec *entry, bool *foundLegacy);
+	static void loadFileEntry(const char *baseName, const char *legacyCharset, unsigned u, FileSpec *entry, bool *foundLegacy);
 	static void saveFileEntry(const char *baseName, unsigned u, const FileSpec &entry);
 	void saveFileList();
 	void addFileEntry( size_t id );
@@ -405,7 +405,7 @@ inline SuccessCode WinEditMain::create( int nCmdShow )
 // ----- class static functions ---------------------------------------- //
 // --------------------------------------------------------------------- //
 
-void WinEditMain::loadFileEntry(const char *baseName, const char *legasyCharset, unsigned u, FileSpec *entry, bool *foundLegacy)
+void WinEditMain::loadFileEntry(const char *baseName, const char *legacyCharset, unsigned u, FileSpec *entry, bool *foundLegacy)
 {
 	STRING fileName;
 	STRING uStr = formatNumber(u);
@@ -414,7 +414,7 @@ void WinEditMain::loadFileEntry(const char *baseName, const char *legasyCharset,
 	entry->filename = application.GetProfile( nullptr, regName, fileName );
 	if( !entry->filename.isEmpty() )
 	{
-		STRING charsetName = STRING(legasyCharset) + uStr;
+		STRING charsetName = STRING(legacyCharset) + uStr;
 		entry->charset = EDIT::EditCharset(application.GetProfile( nullptr, charsetName, EDIT::csANSI ));
 		entry->selStart = entry->selEnd = 0;
 
@@ -1445,9 +1445,9 @@ ProcessStatus WinEditMain::ddeExecute( const char *commandPtr )
 
 void WinEditMain::handleTimer()
 {
-	static size_t	lastLine = size_t(-1);
-	static size_t	lastColumn = size_t(-1);
-	static bool		lastModified = false;
+	static size_t	s_lastLine = size_t(-1);
+	static size_t	s_lastColumn = size_t(-1);
+	static bool		s_lastModified = false;
 
 	size_t			line, column;
 	bool			modified;
@@ -1461,9 +1461,9 @@ void WinEditMain::handleTimer()
 		editor->getCursorPosition( &line, &column );
 		modified = editor->isChanged();
 
-		if( lastLine != line
-		|| lastColumn != column
-		|| lastModified != modified )
+		if( s_lastLine != line
+		|| s_lastColumn != column
+		|| s_lastModified != modified )
 		{
 			newStatus = formatNumber(line) + ':' + formatNumber(column);
 			if(modified)
@@ -1477,16 +1477,16 @@ void WinEditMain::handleTimer()
 			}
 			setStatusText( newStatus );
 
-			lastLine = line;
-			lastColumn = column;
-			lastModified = modified;
+			s_lastLine = line;
+			s_lastColumn = column;
+			s_lastModified = modified;
 		}
 	}
 	else
 	{
 		setStatusText( "Welcome" );
-		lastLine = lastColumn = size_t(-1);
-		lastModified = false;
+		s_lastLine = s_lastColumn = size_t(-1);
+		s_lastModified = false;
 	}
 }
 
@@ -1725,6 +1725,10 @@ void WinEditChild::htmlEntities()
 	STRING			entity, newText = "";
 	STRING			text = getText();
 
+	size_t			start, end;
+	size_t			line = getControl()->getFirstVisible();
+	getSelection(&start, &end);
+
 	for( cp = text; (c=*cp) != 0; cp++ )
 	{
 		if( c== '<' )
@@ -1791,6 +1795,14 @@ void WinEditChild::htmlEntities()
 		else
 		{
 			entity = xml::Element::ascii2HTML( c );
+			if( start > newText.strlen() )
+			{
+				start += entity.strlen()-1;
+			}
+			if( end > newText.strlen() )
+			{
+				end += entity.strlen()-1;
+			}
 			newText += entity;
 			if( strlen(entity) > 1 )
 				changedFlag = true;
@@ -1801,6 +1813,8 @@ void WinEditChild::htmlEntities()
 	{
 		setText( newText );
 		setChanged();
+		getControl()->setFirstVisible( line );
+		setSelection(start, end);
 	}
 }
 

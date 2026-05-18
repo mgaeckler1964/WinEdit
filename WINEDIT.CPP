@@ -49,7 +49,8 @@
 #include <gak/directory.h>
 #include <gak/ensemble.h>
 
-#include <WINLIB/WINLIB.H>
+#include <winlib/Atom.h>
+#include <winlib/WINLIB.H>
 #include <winlib/winapp.h>
 #include <winlib/mdiwin.h>
 #include <winlib/editchld.h>
@@ -83,9 +84,9 @@ using namespace winlib;
 // ----- constants ----------------------------------------------------- //
 // --------------------------------------------------------------------- //
 
-#define MAX_FILE_LIST	10
-#define MIN_FILE_ID		1000
-#define WM_LOAD_FILE	WM_USER
+static const size_t		MAX_FILE_LIST	= 10;
+static const int		MIN_FILE_ID		= 1000;
+static const unsigned	WM_LOAD_FILE	= WM_USER;
 
 namespace myProfile
 {
@@ -793,7 +794,7 @@ void WinEditMain::changeCharset( EDIT::EditCharset newCharset, bool flipBOM )
 				getMenu()->checkMenuItem( EDIT_CS_UTF8 );
 
 			STRING theFileName = editor->getFileName();
-			for( int i=0; i<MAX_FILE_LIST; i++ )
+			for( size_t i=0; i<MAX_FILE_LIST; i++ )
 			{
 				if( !strcmpi( theFileName, m_lastFiles[i].filename ) )
 				{
@@ -1492,13 +1493,10 @@ void WinEditMain::handleTimer()
 
 ProcessStatus WinEditMain::handleMessage( UINT msg, WPARAM, LPARAM atom)
 {
-	char	fileName[512];
-
 	if( msg == WM_LOAD_FILE )
 	{
-		GlobalGetAtomName( (ATOM)atom, fileName, sizeof( fileName ) );
-		handleFile( (const char *)fileName, 0, 0 );
-		GlobalDeleteAtom((ATOM)atom);
+		AutoAtomReader fileName(static_cast<ATOM>(atom));
+		handleFile( fileName.getValue(), 0, 0 );
 		return psPROCESSED;
 	}
 	return psDO_DEFAULT;
@@ -1654,8 +1652,8 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 	{
 		if( *cmdLine )
 		{
-			ATOM	theAtom = GlobalAddAtom( cmdLine );
-			window.message( WM_LOAD_FILE, 0, (LPARAM)theAtom );
+			AtomWriter	theAtom(cmdLine);
+			window.message( WM_LOAD_FILE, 0, LPARAM(theAtom.getAtom()) );
 		}
 
 		window.focus();
@@ -1844,7 +1842,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 
 	if( !theFileName.isEmpty() )
 	{
-		for( int i=0; i<MAX_FILE_LIST; i++ )
+		for( size_t i=0; i<MAX_FILE_LIST; i++ )
 		{
 			if( m_lastFiles[i].filename == theFileName )
 			{

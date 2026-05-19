@@ -1495,7 +1495,7 @@ ProcessStatus WinEditMain::handleMessage( UINT msg, WPARAM, LPARAM atom)
 {
 	if( msg == WM_LOAD_FILE )
 	{
-		AutoAtomReader fileName(static_cast<ATOM>(atom));
+		AtomConsumer fileName(static_cast<ATOM>(atom));
 		handleFile( fileName.getValue(), 0, 0 );
 		return psPROCESSED;
 	}
@@ -1652,7 +1652,7 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 	{
 		if( *cmdLine )
 		{
-			AtomWriter	theAtom(cmdLine);
+			AtomProducer	theAtom(cmdLine);
 			window.message( WM_LOAD_FILE, 0, LPARAM(theAtom.getAtom()) );
 		}
 

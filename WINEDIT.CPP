@@ -597,6 +597,7 @@ void WinEditMain::loadFileList()
 		FileSpec fs;
 		loadFileEntry(myProfile::openFile, myProfile::charset, u, &fs, &foundLegacy);
 
+		doLogValueEx( gakLogging::llInfo, u );
 		openFile( fs.filename, fs.charset, fs.selStart, fs.selEnd );
 	}
 
@@ -1675,7 +1676,7 @@ CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 /*@*/	return nullptr;
 	}
 
-	if( !fileName.isEmpty() )
+	if( *cmdLine )
 		mainWindow->openFile( fileName );
 
 	return mainWindow;

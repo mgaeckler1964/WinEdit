@@ -1642,7 +1642,7 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 /*v*/		break;
 		}
 	}
-	FOR_EACH_X( i, fTypes, 
+	FOR_EACH( i, fTypes, 
 	{
 		registerFileType( applicationPath, appFile, i );
 	});

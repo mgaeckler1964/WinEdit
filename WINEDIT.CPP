@@ -86,7 +86,7 @@ using namespace winlib;
 
 static const size_t		MAX_FILE_LIST	= 10;
 static const int		MIN_FILE_ID		= 1000;
-static const unsigned	WM_LOAD_FILE	= WM_USER;
+static const int		LOAD_FILE		= 666;
 
 namespace myProfile
 {
@@ -213,7 +213,7 @@ class WinEditMain : public MDIwindow
 	virtual void handleFile( const char *, size_t, size_t );
 	virtual void handleFocus();
 	virtual void handleTimer();
-	virtual ProcessStatus handleMessage( UINT, WPARAM, LPARAM );
+	virtual	ProcessStatus handleData(const ForeignWindow &src, int dataType, const void *data, size_t size);
 
 	virtual ProcessStatus ddeInitiate( const char *app, const char *topic );
 	virtual ProcessStatus ddeExecute( const char *command );
@@ -350,6 +350,130 @@ static STRING getDir( STRING pathName )
 		pathName.delStr( 0, 1 );
 
 	return pathName.upperCase();
+}
+
+static void registerFileType( const STRING &applicationPath, const STRING &appFile, size_t i )
+{
+	int					regType;
+	FileTypeRegistry	fType;
+
+	fType.type = "",
+	fType.type_description = "";
+
+	fType.cmd = "",
+	fType.cmd_description = "";
+
+	fType.commandLine = "";
+
+	fType.ddeCommand = "",
+	fType.ddeIfExec = "",
+	fType.application = "",
+	fType.topic = "";
+
+	if( getFileType( fTypes[i].extension, "open", &fType )
+	||  !getFile( fType.commandLine ).compareI( appFile )
+	||  !getFile( fType.commandLine ).compareI( "winedit" )
+	||  !getFile( fType.commandLine ).compareI( "winedt32" )
+	||  !getFile( fType.commandLine ).compareI( "notepad" ) )
+	{
+		// not registered yet
+		if( !fType.type[0U] )
+		{
+			fType.type = fTypes[i].extension;
+			fType.type += "_file";
+		}
+
+		doLogValueEx( gakLogging::llInfo, fType.type_description );
+		doLogValueEx( gakLogging::llInfo, fTypes[i].description );
+		if( !fType.type_description[0U] )
+			fType.type_description = fTypes[i].description;
+
+		fType.cmd = "open",
+		fType.cmd_description = "&Open";
+
+		fType.commandLine = applicationPath;
+
+		fType.ddeCommand = "open %1",
+		fType.ddeIfExec = "",
+		fType.application = appName,
+		fType.topic = "";
+
+		addFileType( &fType );
+		regType = 1;
+	}
+	else if( getFileType( fTypes[i].extension, "edit", &fType )
+	||  !getFile( fType.commandLine ).compareI( appFile )
+	||  !getFile( fType.commandLine ).compareI( "winedit" )
+	||  !getFile( fType.commandLine ).compareI( "winedt32" )
+	||  !getFile( fType.commandLine ).compareI( "notepad" ) )
+	{
+		// register as edit command
+		if( !fType.type[0U] )
+		{
+			fType.type = fTypes[i].extension;
+			fType.type += "_file";
+		}
+
+		if( !fType.type_description[0U] )
+			fType.type_description = fTypes[i].description;
+
+		fType.cmd = "edit",
+		fType.cmd_description = "&Edit",
+
+		fType.commandLine = applicationPath;
+
+		fType.ddeCommand = "open %1",
+		fType.ddeIfExec = "",
+		fType.application = appName,
+		fType.topic = "";
+
+		addFileType( &fType );
+		regType = 2;
+	}
+	else
+	{
+		// register as win edit command
+		if( !fType.type[0U] )
+		{
+			fType.type = fTypes[i].extension;
+			fType.type += "_file";
+		}
+
+		if( !fType.type_description[0U] )
+			fType.type_description = fTypes[i].description;
+
+		fType.cmd = "WinEdit",
+		fType.cmd_description = "&WinEdit",
+
+		fType.commandLine = applicationPath;
+
+		fType.ddeCommand = "open %1",
+		fType.ddeIfExec = "",
+		fType.application = appName,
+		fType.topic = "";
+
+		addFileType( &fType );
+		regType = 3;
+	}
+
+	if( regType < 2
+	&&	!getFileType( fTypes[i].extension, "edit", &fType )
+	&&  (  !fType.commandLine[0U]
+		|| !getFile( fType.commandLine ).compareI( appFile )
+		|| !getFile( fType.commandLine ).compareI( "winedit" )
+		|| !getFile( fType.commandLine ).compareI( "winedt32" ) ))
+	{
+		removeFileType( &fType );
+	}
+	if( regType < 3
+	&&	!getFileType( fTypes[i].extension, "WinEdit", &fType )
+	&&  (  !fType.commandLine[0U]
+		|| !getFile( fType.commandLine ).compareI( appFile )
+		|| !getFile( fType.commandLine ).compareI( "winedit" )
+		|| !getFile( fType.commandLine ).compareI( "winedt32" ) ))
+	{
+		removeFileType( &fType );
+	}
 }
 
 // --------------------------------------------------------------------- //
@@ -559,7 +683,7 @@ void WinEditMain::addFile( const FileSpec &fs )
 {
 	// const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd
 
-	doEnterFunction("WinEditMain::addFile");
+	doEnterFunctionEx(gakLogging::llInfo, "WinEditMain::addFile");
 	for( size_t i=0; i<m_numFiles; i++ )
 	{
 		if( m_lastFiles[i].filename == fs.filename )
@@ -736,7 +860,7 @@ void WinEditMain::saveFileAs()
 
 void WinEditMain::changeCharset( EDIT::EditCharset newCharset, bool flipBOM )
 {
-	doEnterFunction("WinEditMain::changeCharset");
+	doEnterFunctionEx(gakLogging::llInfo, "WinEditMain::changeCharset");
 
 	EDIT::EditCharset	oldCharset;
 
@@ -1491,15 +1615,13 @@ void WinEditMain::handleTimer()
 	}
 }
 
-ProcessStatus WinEditMain::handleMessage( UINT msg, WPARAM, LPARAM atom)
+ProcessStatus WinEditMain::handleData(const ForeignWindow &, int dataType, const void *data, size_t size)
 {
-	if( msg == WM_LOAD_FILE )
-	{
-		AtomConsumer fileName(static_cast<ATOM>(atom));
-		handleFile( fileName.getValue(), 0, 0 );
-		return psPROCESSED;
-	}
-	return psDO_DEFAULT;
+	assert( dataType == LOAD_FILE );
+	assert(strlen((const char*)data)+1==size);
+
+	handleFile( (const char *)data, 0, 0 );
+	return psPROCESSED;
 }
 
 bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
@@ -1507,13 +1629,10 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 	doEnableLogEx(gakLogging::llInfo);
 	doEnterFunctionEx(gakLogging::llInfo, "WinEdit::startApplication" );
 
-	FileTypeRegistry	fType;
-	size_t				i;
 	STRING				applicationPath = application.getFileName();
 	STRING				appFile = getFile( applicationPath );
-	int					regType;
 
-	for( i=0; i<applicationPath.strlen(); i++ )
+	for( size_t i=0; i<applicationPath.strlen(); i++ )
 	{
 		if( isspace(applicationPath[i] ) )
 		{
@@ -1522,127 +1641,10 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 /*v*/		break;
 		}
 	}
-
-	for( i=0; i<sizeof(fTypes)/sizeof(fTypes[0]); i++ )
+	FOR_EACH_X( i, fTypes, 
 	{
-		fType.type = "",
-		fType.type_description = "";
-
-		fType.cmd = "",
-		fType.cmd_description = "";
-
-		fType.commandLine = "";
-
-		fType.ddeCommand = "",
-		fType.ddeIfExec = "",
-		fType.application = "",
-		fType.topic = "";
-
-		if( getFileType( fTypes[i].extension, "open", &fType )
-		||  !getFile( fType.commandLine ).compareI( appFile )
-		||  !getFile( fType.commandLine ).compareI( "winedit" )
-		||  !getFile( fType.commandLine ).compareI( "winedt32" )
-		||  !getFile( fType.commandLine ).compareI( "notepad" ) )
-		{
-			// not registered yet
-			if( !fType.type[0U] )
-			{
-				fType.type = fTypes[i].extension;
-				fType.type += "_file";
-			}
-
-			doLogValueEx( gakLogging::llInfo, fType.type_description );
-			doLogValueEx( gakLogging::llInfo, fTypes[i].description );
-			if( !fType.type_description[0U] )
-				fType.type_description = fTypes[i].description;
-
-			fType.cmd = "open",
-			fType.cmd_description = "&Open";
-
-			fType.commandLine = applicationPath;
-
-			fType.ddeCommand = "open %1",
-			fType.ddeIfExec = "",
-			fType.application = appName,
-			fType.topic = "";
-
-			addFileType( &fType );
-			regType = 1;
-		}
-		else if( getFileType( fTypes[i].extension, "edit", &fType )
-		||  !getFile( fType.commandLine ).compareI( appFile )
-		||  !getFile( fType.commandLine ).compareI( "winedit" )
-		||  !getFile( fType.commandLine ).compareI( "winedt32" )
-		||  !getFile( fType.commandLine ).compareI( "notepad" ) )
-		{
-			// register as edit command
-			if( !fType.type[0U] )
-			{
-				fType.type = fTypes[i].extension;
-				fType.type += "_file";
-			}
-
-			if( !fType.type_description[0U] )
-				fType.type_description = fTypes[i].description;
-
-			fType.cmd = "edit",
-			fType.cmd_description = "&Edit",
-
-			fType.commandLine = applicationPath;
-
-			fType.ddeCommand = "open %1",
-			fType.ddeIfExec = "",
-			fType.application = appName,
-			fType.topic = "";
-
-			addFileType( &fType );
-			regType = 2;
-		}
-		else
-		{
-			// register as win edit command
-			if( !fType.type[0U] )
-			{
-				fType.type = fTypes[i].extension;
-				fType.type += "_file";
-			}
-
-			if( !fType.type_description[0U] )
-				fType.type_description = fTypes[i].description;
-
-			fType.cmd = "WinEdit",
-			fType.cmd_description = "&WinEdit",
-
-			fType.commandLine = applicationPath;
-
-			fType.ddeCommand = "open %1",
-			fType.ddeIfExec = "",
-			fType.application = appName,
-			fType.topic = "";
-
-			addFileType( &fType );
-			regType = 3;
-		}
-
-		if( regType < 2
-		&&	!getFileType( fTypes[i].extension, "edit", &fType )
-		&&  (  !fType.commandLine[0U]
-			|| !getFile( fType.commandLine ).compareI( appFile )
-			|| !getFile( fType.commandLine ).compareI( "winedit" )
-			|| !getFile( fType.commandLine ).compareI( "winedt32" ) ))
-		{
-			removeFileType( &fType );
-		}
-		if( regType < 3
-		&&	!getFileType( fTypes[i].extension, "WinEdit", &fType )
-		&&  (  !fType.commandLine[0U]
-			|| !getFile( fType.commandLine ).compareI( appFile )
-			|| !getFile( fType.commandLine ).compareI( "winedit" )
-			|| !getFile( fType.commandLine ).compareI( "winedt32" ) ))
-		{
-			removeFileType( &fType );
-		}
-	}
+		registerFileType( applicationPath, appFile, i );
+	});
 
 	setApplication( appName );
 
@@ -1652,8 +1654,7 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 	{
 		if( *cmdLine )
 		{
-			AtomProducer	theAtom(cmdLine);
-			window.message( WM_LOAD_FILE, 0, LPARAM(theAtom.getAtom()) );
+			window.copyData( makeFullPath(cmdLine), LOAD_FILE );
 		}
 
 		window.focus();
@@ -1665,7 +1666,7 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 
 CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 {
-	STRING fileName = cmdLine;
+	STRING fileName = makeFullPath(cmdLine);
 
 	mainWindow = new WinEditMain;
 	if( mainWindow->create( nCmdShow ) == scERROR )
@@ -1818,7 +1819,7 @@ void WinEditChild::htmlEntities()
 
 void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, size_t selStart, size_t selEnd )
 {
-	doEnterFunction("WinEditMain::openFile");
+	doEnterFunctionEx(gakLogging::llInfo, "WinEditMain::openFile");
 
 	WinEditChild	*editor=nullptr;
 	F_STRING		curFileName;

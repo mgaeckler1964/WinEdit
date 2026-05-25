@@ -39,6 +39,8 @@
 // ----- includes ------------------------------------------------------ //
 // --------------------------------------------------------------------- //
 
+#include <memory>
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -139,6 +141,7 @@ class WinEditChild : public EditChild
 	virtual SuccessCode handleClose();
 
 	public:
+	WinEditChild( BasicWindow *owner ) : EditChild(owner) {}
 	void htmlEntities();
 	void changeReadOnly();
 };
@@ -231,8 +234,6 @@ class WinEditMain : public MDIwindow
 
 class WinEdit : public Application
 {
-	WinEditMain		*mainWindow;
-
 	virtual bool 			startApplication( HINSTANCE hInstance, const char *cmdLine );
 	virtual CallbackWindow	*createMainWindow( const char *cmdLine, int nCmdShow );
 	virtual void deleteMainWindow( BasicWindow  *mainWindow );
@@ -961,17 +962,15 @@ void WinEditMain::changeReadOnly()
 
 void WinEditMain::print()
 {
-	PrinterDialog	dlg;
-	PrintDevice		*printer;
-
 	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
 	if( editor )
 	{
+		PrinterDialog	dlg;
+
 		if( dlg.create( this ) )
 		{
-			printer = dlg.getPrinter();
-			editor->print( printer );
-			delete printer;
+			std::auto_ptr<PrintDevice> printer( dlg.getPrinter() );
+			editor->print( printer.get() );
 		}
 	}
 }
@@ -1552,6 +1551,11 @@ void WinEditMain::handleReplace( const char *text, const char *replace,
 
 ProcessStatus WinEditMain::ddeInitiate( const char *application, const char *topic )
 {
+	doEnterFunctionEx(gakLogging::llInfo, "WinEdit::ddeInitiate" );
+	doLogValueEx( gakLogging::llInfo, application );
+	doLogValueEx( gakLogging::llInfo, topic );
+	doLogValueEx( gakLogging::llInfo, appName );
+
 	if( !strcmpi( application, appName )
 	&&  !strcmpi( topic, "SYSTEM" ) )
 		return psPROCESSED;
@@ -1560,6 +1564,9 @@ ProcessStatus WinEditMain::ddeInitiate( const char *application, const char *top
 
 ProcessStatus WinEditMain::ddeExecute( const char *commandPtr )
 {
+	doEnterFunctionEx(gakLogging::llInfo, "WinEdit::startApplication" );
+	doLogValueEx( gakLogging::llInfo, commandPtr );
+
 	if( !strncmpi( commandPtr, "open ", sizeof( "open " ) -1 ) )
 	{
 		openFile( commandPtr + sizeof( "open" ) );
@@ -1629,6 +1636,7 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 {
 	doEnableLogEx(gakLogging::llInfo);
 	doEnterFunctionEx(gakLogging::llInfo, "WinEdit::startApplication" );
+	doLogValueEx( gakLogging::llInfo, cmdLine );
 
 	STRING				applicationPath = application.getFileName();
 	STRING				appFile = getFile( applicationPath );
@@ -1667,9 +1675,12 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 
 CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 {
+	doEnterFunctionEx( gakLogging::llInfo, "WinEdit::createMainWindow" );
+	doLogValueEx( gakLogging::llInfo, cmdLine );
 	STRING fileName = makeFullPath(cmdLine);
+	doLogValueEx( gakLogging::llInfo, fileName );
 
-	mainWindow = new WinEditMain;
+	std::auto_ptr<WinEditMain> mainWindow(new WinEditMain);
 	if( mainWindow->create( nCmdShow ) == scERROR )
 	{
 		MessageBox( nullptr, "Cannot Create Window", "Error", MB_ICONSTOP|MB_OK );
@@ -1679,7 +1690,7 @@ CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 	if( *cmdLine )
 		mainWindow->openFile( fileName );
 
-	return mainWindow;
+	return mainWindow.release();
 }
 
 void WinEdit::deleteMainWindow( BasicWindow  *mainWindow )
@@ -1864,7 +1875,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 
 	if( !editor )
 	{
-		editor = new WinEditChild;
+		editor = new WinEditChild(this);
 		editor->create( this, theFileName, 0, 0 );
 
 		if( m_theFont.isAssigned() )

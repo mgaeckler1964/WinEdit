@@ -171,8 +171,19 @@ class WinEditMain : public MDIwindow
 	void createBackup( const STRING &fileName );
 	void openFile();
 	void saveFile();
+	public:
+	void saveFile(WinEditChild	*editor);
+	private:
 	void saveAllFiles();
-	void saveFileAs();
+	void saveFileAs()
+	{
+		WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
+		if( editor )
+		{
+			saveFileAs(editor);
+		}
+	}
+	void saveFileAs(WinEditChild*child);
 	void changeCharset( EDIT::EditCharset newCharset, bool flipBOM=false );
 	void htmlEntities();
 	void closeAll();
@@ -203,13 +214,14 @@ class WinEditMain : public MDIwindow
 	void compareFiles();
 
 	private:
-	void loadFileList();
-	static void loadFileEntry(const char *baseName, const char *legacyCharset, unsigned u, FileSpec *entry, bool *foundLegacy);
-	static void saveFileEntry(const char *baseName, unsigned u, const FileSpec &entry);
-	void saveFileList();
-	void addFileEntry( size_t id );
-	void removeFileEntry( size_t id );
-	void addFile( const FileSpec &fs );
+	void loadAllRegistryFileLists();
+	static void loadRegistryFileEntry(const char *baseName, const char *legacyCharset, unsigned u, FileSpec *entry, bool *foundLegacy);
+	static void saveRegistryFileEntry(const char *baseName, unsigned u, const FileSpec &entry);
+	void add2OpenFileList(WinEditChild	*editor);
+	void saveOpenFileList();
+	void addMenuFileEntryFromList( size_t id );
+	void removeMenuFileEntry( size_t id );
+	void addMenuFile( const FileSpec &fs );
 
 	virtual SuccessCode handleClose();
 	virtual ProcessStatus handleCommand( int command );
@@ -522,7 +534,7 @@ inline SuccessCode WinEditMain::create( int nCmdShow )
 //	hideVertScrollBar();
 //	hideHorizScrollBar();
 
-	loadFileList();
+	loadAllRegistryFileLists();
 
 	return scSUCCESS;
 }
@@ -531,7 +543,7 @@ inline SuccessCode WinEditMain::create( int nCmdShow )
 // ----- class static functions ---------------------------------------- //
 // --------------------------------------------------------------------- //
 
-void WinEditMain::loadFileEntry(const char *baseName, const char *legacyCharset, unsigned u, FileSpec *entry, bool *foundLegacy)
+void WinEditMain::loadRegistryFileEntry(const char *baseName, const char *legacyCharset, unsigned u, FileSpec *entry, bool *foundLegacy)
 {
 	STRING fileName;
 	STRING uStr = formatNumber(u);
@@ -561,7 +573,7 @@ void WinEditMain::loadFileEntry(const char *baseName, const char *legacyCharset,
 	}
 }
 
-void WinEditMain::saveFileEntry(const char *baseName, unsigned u, const FileSpec &entry)
+void WinEditMain::saveRegistryFileEntry(const char *baseName, unsigned u, const FileSpec &entry)
 {
 	STRING regName = STRING(baseName) + formatNumber(u);
 
@@ -575,7 +587,7 @@ void WinEditMain::saveFileEntry(const char *baseName, unsigned u, const FileSpec
 // ----- class privates ------------------------------------------------ //
 // --------------------------------------------------------------------- //
 
-void WinEditMain::loadFileList()
+void WinEditMain::loadAllRegistryFileLists()
 {
 	doEnterFunctionEx(gakLogging::llInfo, "WinEditMain::loadFileList");
 
@@ -583,11 +595,11 @@ void WinEditMain::loadFileList()
 	{
 		FileSpec	fs;
 		bool		dummy;
-		loadFileEntry(myProfile::lastFile, myProfile::lastCharset, u, &fs, &dummy);
+		loadRegistryFileEntry(myProfile::lastFile, myProfile::lastCharset, u, &fs, &dummy);
 
-		if( !access( fs.filename, 0 ) )
+		if( !strAccess( fs.filename, 0 ) )
 		{
-			addFile( fs );
+			addMenuFile( fs );
 		}
 	}
 
@@ -596,7 +608,7 @@ void WinEditMain::loadFileList()
 	for( unsigned u=0; u<numFiles; ++u )
 	{
 		FileSpec fs;
-		loadFileEntry(myProfile::openFile, myProfile::charset, u, &fs, &foundLegacy);
+		loadRegistryFileEntry(myProfile::openFile, myProfile::charset, u, &fs, &foundLegacy);
 
 		doLogValueEx( gakLogging::llInfo, u );
 		openFile( fs.filename, fs.charset, fs.selStart, fs.selEnd );
@@ -622,13 +634,29 @@ void WinEditMain::loadFileList()
 	}
 }
 
-void WinEditMain::saveFileList()
+void WinEditMain::add2OpenFileList(WinEditChild	*editor)
+{
+	unsigned u = application.GetProfile( "", myProfile::OpenFiles, long(-1) )+1;
+	STRING fileName = editor->getFileName();
+	if( !fileName.isEmpty() )
+	{
+		FileSpec openFile = {
+			fileName, 
+			editor->getCharset()
+		};
+		editor->getSelection(&openFile.selStart, &openFile.selEnd );
+		saveRegistryFileEntry(myProfile::openFile, u, openFile);
+		application.WriteProfile( false, "", myProfile::OpenFiles, long(u) );
+	}
+}
+
+void WinEditMain::saveOpenFileList()
 {
 	STRING			fileName;
 
 	for( unsigned u=0; u<m_numFiles; u++ )
 	{
-		saveFileEntry(myProfile::lastFile, u, m_lastFiles[u]);
+		saveRegistryFileEntry(myProfile::lastFile, u, m_lastFiles[u]);
 	}
 
 	unsigned u=0;
@@ -643,7 +671,7 @@ void WinEditMain::saveFileList()
 				editor->getCharset()
 			};
 			editor->getSelection(&openFile.selStart, &openFile.selEnd );
-			saveFileEntry(myProfile::openFile, u++, openFile);
+			saveRegistryFileEntry(myProfile::openFile, u++, openFile);
 		}
 
 		editor = static_cast<WinEditChild *>(getNextChild());
@@ -652,7 +680,7 @@ void WinEditMain::saveFileList()
 	application.WriteProfile( false, "", myProfile::OpenFiles, long(u) );
 }
 
-void WinEditMain::addFileEntry( size_t id )
+void WinEditMain::addMenuFileEntryFromList( size_t id )
 {
 	STRING	menuEntry;
 	size_t	menuMnemonic = id+1;
@@ -667,7 +695,7 @@ void WinEditMain::addFileEntry( size_t id )
 	getMenu()->addMenuItem( 0, int(MIN_FILE_ID+id), menuEntry );
 }
 
-void WinEditMain::removeFileEntry( size_t id )
+void WinEditMain::removeMenuFileEntry( size_t id )
 {
 	getMenu()->removeMenuItem( 0, int(MIN_FILE_ID+id) );
 
@@ -675,13 +703,13 @@ void WinEditMain::removeFileEntry( size_t id )
 	{
 		getMenu()->removeMenuItem( 0, int(MIN_FILE_ID+i) );
 		m_lastFiles[i-1] = m_lastFiles[i];
-		addFileEntry( i-1 );
+		addMenuFileEntryFromList( i-1 );
 	}
 
 	--m_numFiles;
 }
 
-void WinEditMain::addFile( const FileSpec &fs )
+void WinEditMain::addMenuFile( const FileSpec &fs )
 {
 	// const STRING &fileName, EDIT::EditCharset charset, size_t selStart, size_t selEnd
 
@@ -690,16 +718,16 @@ void WinEditMain::addFile( const FileSpec &fs )
 	{
 		if( m_lastFiles[i].filename == fs.filename )
 		{
-			removeFileEntry( i );
+			removeMenuFileEntry( i );
 			break;
 		}
 	}
 
 	if( m_numFiles >= MAX_FILE_LIST )
-		removeFileEntry( 0 );
+		removeMenuFileEntry( 0 );
 
 	m_lastFiles[m_numFiles] = fs;
-	addFileEntry( m_numFiles );
+	addMenuFileEntryFromList( m_numFiles );
 	m_numFiles++;
 }
 
@@ -723,8 +751,8 @@ void WinEditMain::createBackup( const STRING &fileName )
 
 		backupFile += ".bak";
 
-		if( !access( backupFile, 0 ) )
-			::remove( backupFile );
+		if( !strAccess( backupFile, 0 ) )
+			::strRemove( backupFile );
 		rename( fileName, backupFile );
 	}
 }
@@ -758,11 +786,10 @@ void WinEditMain::checkAllFiles()
 void WinEditMain::openFile()
 {
 	OpenFileDialog	fileDlg;
-	char			tmpBuff[10240];
 
 	// find default directory
-	getcwd( tmpBuff, sizeof( tmpBuff ) );
-	STRING	directory = application.GetProfile( nullptr, myProfile::directory, tmpBuff );
+	STRING curDir = getcwd();
+	STRING	directory = application.GetProfile( nullptr, myProfile::directory, curDir );
 	setcwd( directory );
 
 	// restore last filter used
@@ -778,25 +805,16 @@ void WinEditMain::openFile()
 	}
 
 	// save default directory
-	getcwd( tmpBuff, sizeof( tmpBuff ) );
-	application.WriteProfile( false, nullptr, myProfile::directory, tmpBuff );
+	curDir = getcwd();
+	application.WriteProfile( false, nullptr, myProfile::directory, curDir );
 }
 
 void WinEditMain::saveFile()
 {
-	STRING			fileName;
-
 	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
 	if( editor && editor->isChanged() )
 	{
-		fileName = editor->getFileName();
-		if( editor->isEditable() && fileName[(size_t)0] )
-		{
-			createBackup( fileName );
-			editor->saveToFile();
-		}
-		else
-			saveFileAs();
+		saveFile(editor);
 	}
 }
 
@@ -823,40 +841,34 @@ void WinEditMain::saveAllFiles()
 	}
 }
 
-void WinEditMain::saveFileAs()
+void WinEditMain::saveFileAs(WinEditChild	*editor)
 {
 	SaveFileAsDialog	saveDialog;
-	char				fileName[1024];
+	STRING				fileName;
+	STRING				tmpName = editor->getFileName();
+	tmpName = getDir( tmpName );
+	if( !tmpName.isEmpty() )
+		setcwd( tmpName );
 
-	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
-	if( editor )
+	tmpName = editor->getFileName();
+	if( !tmpName.isEmpty() )
+		fileName = tmpName;
+
+	saveDialog.setFilterIndex( application.GetProfile( nullptr, myProfile::filterIndex, 1 ) );
+
+	saveDialog.setFilename( fileName );
+	if( saveDialog.create( this,
+							0,
+							C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 ) )
 	{
-		STRING tmpName = editor->getFileName();
-		tmpName = getDir( tmpName );
-		if( !tmpName.isEmpty() )
-			setcwd( tmpName );
-
-		tmpName = editor->getFileName();
-		if( !tmpName.isEmpty() )
-			strcpy( fileName, tmpName );
-		else
-			*fileName = 0;
-
-		saveDialog.setFilterIndex( application.GetProfile( nullptr, myProfile::filterIndex, 1 ) );
-
-		saveDialog.setFilename( fileName );
-		if( saveDialog.create( this,
-								0,
-								C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 ) )
-		{
-			editor->saveToFile( saveDialog.getFilename() );
-			FileSpec fs = {
-				saveDialog.getFilename(), editor->getCharset()
-			};
-			editor->getSelection(&fs.selStart, &fs.selEnd);
-			addFile( fs );
-			application.WriteProfile( false, nullptr, myProfile::filterIndex, saveDialog.getFilterIndex() );
-		}
+		editor->saveToFile( saveDialog.getFilename() );
+		FileSpec fs = {
+			saveDialog.getFilename(), editor->getCharset()
+		};
+		editor->getSelection(&fs.selStart, &fs.selEnd);
+		addMenuFile( fs );
+		application.WriteProfile( false, nullptr, myProfile::filterIndex, saveDialog.getFilterIndex() );
+		add2OpenFileList(editor);
 	}
 }
 
@@ -1344,33 +1356,33 @@ void WinEditChild::handleFocus()
 
 SuccessCode WinEditChild::handleClose()
 {
+	WinEditMain *mainWindow = (WinEditMain *)getMDIparent();
+
 	if( isChanged() )
 	{
-		char	text_buff[1024];
 		STRING	theMessage = application.loadString( CLOSE_ANYWAY );
 		STRING	theFile = getFileName();
 		if( theMessage.size() + theFile.size() >= 1024 )
 		{
 			theFile = STRING("...") + theFile.rightString( 1016 - theMessage.strlen() );
 		}
-		sprintf( text_buff, theMessage, !theFile.isEmpty() ? (const char *)theFile : "untitled" );
-		int button = messageBox( text_buff, WARNING, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
+		theMessage.searchNreplace( "%s", !theFile.isEmpty() ? theFile : STRING("untitled") );
+		int button = messageBox( theMessage, WARNING, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
 
 		if( button == IDCANCEL )
 /*@*/		return scERROR;
 
 		if( button == IDYES )
 		{
-			saveToFile();
+			mainWindow->saveFile(this);
 			if( isChanged() )
 /*@*/			return scERROR;
 		}
 	}
 
-	WinEditMain *mainWindows = (WinEditMain *)getMDIparent();
 	size_t selStart, selEnd;
 	getSelection(&selStart, &selEnd);
-	mainWindows->updateFileMenu( getFileName(), selStart, selEnd );
+	mainWindow->updateFileMenu( getFileName(), selStart, selEnd );
 
 	close();
 	return scSUCCESS;
@@ -1385,7 +1397,7 @@ void WinEditMain::handleFocus()
 
 SuccessCode WinEditMain::handleClose()
 {
-	saveFileList();
+	saveOpenFileList();
 	saveWindowRect( "mainWindow" );
 	return MDIwindow::handleClose();
 }
@@ -1829,6 +1841,18 @@ void WinEditChild::htmlEntities()
 	}
 }
 
+void WinEditMain::saveFile(WinEditChild	*editor)
+{
+	STRING	fileName = editor->getFileName();
+	if( editor->isEditable() && !fileName.isEmpty() )
+	{
+		createBackup( fileName );
+		editor->saveToFile();
+	}
+	else
+		saveFileAs();
+}
+
 void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, size_t selStart, size_t selEnd )
 {
 	doEnterFunctionEx(gakLogging::llInfo, "WinEditMain::openFile");
@@ -1921,7 +1945,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 		FileSpec fs = {
 			theFileName, charSet, selStart, selEnd
 		};
-		addFile( fs );
+		addMenuFile( fs );
 	}
 	else
 	{

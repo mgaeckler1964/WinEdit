@@ -211,8 +211,8 @@ FILETYPE VFT_APP
    VALUE "FileDescription", "Windows Editor\000"
    VALUE "FileVersion", "1.3.0\000"
    VALUE "InternalName", "WinEdit\000"
-   VALUE "LegalCopyright", "© 1995-2025 by Martin Gäckler\000"
-   VALUE "OriginalFilename", "winedt32.exe\000"
+   VALUE "LegalCopyright", "© 1991-2025 by Martin Gäckler\000"
+   VALUE "OriginalFilename", "winedit.exe\000"
   }
 
  }

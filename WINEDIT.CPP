@@ -1,12 +1,12 @@
 /*
 		Project:		WINEDIT (Windows MDI-Editor)
 		Module: 		WINEDIT.CPP
-		Description:	The Mainprogram
+		Description:	An MDI text editor based on the windows edit control
 		Author:			Martin Gäckler
 		Address:		Hofmannsthalweg 14, A-4030 Linz
 		Web:			https://www.gaeckler.at/
 
-		Copyright:		(c) 1988-2026 Martin Gäckler
+		Copyright:		(c) 1991-2026 Martin Gäckler
 
 		This program is free software: you can redistribute it and/or modify  
 		it under the terms of the GNU General Public License as published by  
@@ -228,7 +228,7 @@ class WinEditMain : public MDIwindow
 	virtual void handleFile( const char *, size_t, size_t );
 	virtual void handleFocus();
 	virtual void handleTimer();
-	virtual	ProcessStatus handleData(const ForeignWindow &src, int dataType, const void *data, size_t size);
+	virtual	ProcessStatus handleData(const ForeignWindow &src, gak::uint64 dataType, const void *data, size_t size);
 
 	virtual ProcessStatus ddeInitiate( const char *app, const char *topic );
 	virtual ProcessStatus ddeExecute( const char *command );
@@ -1635,8 +1635,9 @@ void WinEditMain::handleTimer()
 	}
 }
 
-ProcessStatus WinEditMain::handleData(const ForeignWindow &, int dataType, const void *data, size_t size)
+ProcessStatus WinEditMain::handleData(const ForeignWindow &, gak::uint64 dataType, const void *data, size_t size)
 {
+	dataType; size;
 	assert( dataType == LOAD_FILE );
 	assert(strlen((const char*)data)+1==size);
 

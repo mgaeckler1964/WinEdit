@@ -981,7 +981,7 @@ void WinEditMain::print()
 
 		if( dlg.create( this ) )
 		{
-			std::auto_ptr<PrintDevice> printer( dlg.getPrinter() );
+			std::unique_ptr<PrintDevice> printer( dlg.getPrinter() );
 			editor->print( printer.get() );
 		}
 	}
@@ -1693,7 +1693,7 @@ CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
 	STRING fileName = makeFullPath(cmdLine);
 	doLogValueEx( gakLogging::llInfo, fileName );
 
-	std::auto_ptr<WinEditMain> mainWindow(new WinEditMain);
+	std::unique_ptr<WinEditMain> mainWindow(new WinEditMain);
 	if( mainWindow->create( nCmdShow ) == scERROR )
 	{
 		MessageBox( nullptr, "Cannot Create Window", "Error", MB_ICONSTOP|MB_OK );

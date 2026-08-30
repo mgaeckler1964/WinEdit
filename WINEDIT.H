@@ -69,6 +69,7 @@
 #define EDIT_CS_UTF8		218
 #define EDIT_CS_UTF8_BOM	219
 #define EDIT_READ_ONLY		220
+#define EDIT_FORMAT			221
 
 #define SEARCH_SEARCH		301
 #define SEARCH_REPLACE		302
@@ -91,6 +92,12 @@
 #define TABWIDTH			102
 #define IDC_AUTO_INDENT		103
 #define AUTO_RELOAD			104
+
+ #define LINE_WIDTH			201
+ #define BLOCK_LEFT			202
+ #define BLOCK_ALIGN		203
+ #define BLOCK_CENTER		204
+ #define BLOCK_RIGHT		205
 
 #define INFO_WINDOWS_WIDTH	502
 

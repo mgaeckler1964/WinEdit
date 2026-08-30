@@ -109,7 +109,11 @@ namespace myProfile
 	static const char selStart[] = "selStart";
 	static const char Style[] = "Style";
 	static const char tabWidth[] = "tabWidth";
+	static const char lineWidth[] = "lineWidth";
 };
+
+static const char BLOCK_MARKER[] = "\r\n\r\n";
+static const char EOL_MARKER[] = "\r\n";
 
 // --------------------------------------------------------------------- //
 // ----- class definitions --------------------------------------------- //
@@ -123,8 +127,8 @@ class PreferencesDlg : public ModalDialog
 	CheckBox	autoReload;
 
 	private:
-	virtual ProcessStatus handleCreate( void );
-	virtual ProcessStatus handleOk( void );
+	virtual ProcessStatus handleCreate();
+	virtual ProcessStatus handleOk();
 };
 
 class AboutDlg : public ModalDialog
@@ -141,9 +145,40 @@ class WinEditChild : public EditChild
 	virtual SuccessCode handleClose();
 
 	public:
+	enum BlockFormat
+	{
+		bfUNKNOWN, bfLEFT, bfBLOCK, bfCENTER, bfRIGHT
+	};
 	WinEditChild( BasicWindow *owner ) : EditChild(owner) {}
 	void htmlEntities();
 	void changeReadOnly();
+	void formatBlock( BlockFormat format, size_t lineLen );
+};
+
+class FormatBlockDlg : public ModalDialog
+{
+	EditControl					linewidth;
+	RadioButton					leftBtn;
+	RadioButton					blockBtn;
+	RadioButton					centerBtn;
+	RadioButton					rightBtn;
+
+	unsigned					m_lineLen;
+	WinEditChild::BlockFormat	m_format;
+
+	virtual ProcessStatus handleCreate();
+	virtual ProcessStatus handleOk();
+
+	public:
+	unsigned getLineLen() const
+	{
+		return m_lineLen; linewidth.getText().getValueN<size_t>();
+	}
+
+	WinEditChild::BlockFormat getFormat() const
+	{
+		return m_format;
+	}
 };
 
 class WinEditMain : public MDIwindow
@@ -205,6 +240,7 @@ class WinEditMain : public MDIwindow
 	void indent();
 	void unindent();
 	void lineBreak();
+	void formatBlock();
 
 	virtual void handleFind( const char *, bool, bool, bool );
 	virtual void handleReplace( const char *, const char *, bool, bool, bool );
@@ -999,17 +1035,15 @@ void WinEditMain::closeAll()
 	}
 }
 
-
 void WinEditMain::preferences()
 {
 	PreferencesDlg	dialog;
-	unsigned int	tabWidth;
 
-	if( dialog.create( FILE_PREFERENCES, this  ) )
+	if( dialog.create( FILE_PREFERENCES, this  ) == IDOK )
 	{
-		bool autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
-		bool autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
-		tabWidth = (unsigned int)application.GetProfile( nullptr, myProfile::tabWidth, 4 );
+		bool			autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
+		bool			autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
+		unsigned		tabWidth = unsigned(application.GetProfile( nullptr, myProfile::tabWidth, 4 ));
 		WinEditChild	*editor = static_cast<WinEditChild *>(getFirstChild());
 		if( editor ) do
 		{
@@ -1139,6 +1173,24 @@ void WinEditMain::lineBreak()
 		{
 			editor->setLineBreak();
 			getMenu()->checkMenuItem( EDIT_BREAK );
+		}
+	}
+}
+
+void WinEditMain::formatBlock()
+{
+
+	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
+	if( editor )
+	{
+		FormatBlockDlg	dialog;
+
+		if( dialog.create( EDIT_FORMAT, this  ) == IDOK)
+		{
+			WinEditChild::BlockFormat	fmt = dialog.getFormat();
+			size_t lineLen = dialog.getLineLen();
+			if( lineLen )
+				editor->formatBlock(fmt, lineLen);
 		}
 	}
 }
@@ -1289,6 +1341,47 @@ ProcessStatus PreferencesDlg::handleOk()
 
 	return psDO_DEFAULT;
 }
+
+
+ProcessStatus FormatBlockDlg::handleCreate()
+{
+	linewidth.initHandle( this, LINE_WIDTH );
+
+	leftBtn.initHandle( this, BLOCK_LEFT );
+	blockBtn.initHandle( this, BLOCK_ALIGN );
+	centerBtn.initHandle( this, BLOCK_CENTER );
+	rightBtn.initHandle( this, BLOCK_RIGHT );
+
+	m_lineLen = application.GetProfile( nullptr, myProfile::lineWidth, 0);
+	linewidth.setText(formatNumber(m_lineLen));
+
+	leftBtn.setActive();
+	blockBtn.disable();
+	centerBtn.disable();
+	rightBtn.disable();
+
+	return psPROCESSED;
+}
+
+ProcessStatus FormatBlockDlg::handleOk()
+{
+	m_lineLen = linewidth.getText().getValueN<unsigned>();
+	application.WriteProfile( false, "", myProfile::lineWidth, m_lineLen );
+
+	if( leftBtn.isActive() )
+		m_format = WinEditChild::bfLEFT;
+	else if( blockBtn.isActive() )
+		m_format = WinEditChild::bfBLOCK;
+	else if( centerBtn.isActive() )
+		m_format = WinEditChild::bfCENTER;
+	else if( rightBtn.isActive() )
+		m_format = WinEditChild::bfRIGHT;
+	else
+		m_format = WinEditChild::bfUNKNOWN;
+
+	return psDO_DEFAULT;
+}
+
 
 void WinEditChild::handleFocus()
 {
@@ -1471,6 +1564,9 @@ ProcessStatus WinEditMain::handleCommand( int command )
 		changeLineEnd(RL_END_LFCR);			break;
 	case EDIT_READ_ONLY:
 		changeReadOnly();					break;
+
+	case EDIT_FORMAT:
+		formatBlock();						break;
 
 	case SEARCH_SEARCH:
 		searchText();						break;
@@ -1840,6 +1936,82 @@ void WinEditChild::htmlEntities()
 		getControl()->setFirstVisible( line );
 		setSelection(start, end);
 	}
+}
+
+void WinEditChild::formatBlock( BlockFormat format, size_t lineLen )
+{
+	bool			found = false;
+	size_t			start, end;
+	size_t			line = getControl()->getFirstVisible();
+	getSelection(&start, &end);
+	STRING			text = getText();
+
+	for( const char *cp = text+start; ; --start, --cp )
+	{
+		if( !strncmp(cp, BLOCK_MARKER, sizeof(BLOCK_MARKER)-1 ) )
+		{
+			found = true;
+/*v*/		break;
+		}
+		if( !start )
+		{
+			found = false;
+/*v*/		break;
+		}
+	}
+	if( found )
+		start += sizeof(BLOCK_MARKER)-1;
+
+	for( const char *cp = text+end; end < text.size(); ++end, ++cp )
+	{
+		if( !strncmp(cp, BLOCK_MARKER, sizeof(BLOCK_MARKER)-1 ) )
+		{
+/*v*/		break;
+		}
+	}
+
+	STRING block = text.subString( start, end-start );
+	size_t curLineLen = 0;
+	STRING newText;
+	bool crlfDropped = false;
+	for( const char *cp = block; *cp; ++cp )
+	{
+		char c = *cp;
+		if( (c == '\r' || c=='\n') && curLineLen < lineLen )
+			crlfDropped = (curLineLen > 0);
+		else if( isSpace( c ) )
+		{
+			if( curLineLen >= lineLen )
+			{
+				crlfDropped = false;
+				newText += EOL_MARKER;
+				curLineLen = 0;
+			}
+			else if( curLineLen && !newText.endsWith(' ') )
+			{
+				curLineLen++;
+				newText += ' ';
+			}
+		}
+		else
+		{
+			if( crlfDropped )
+			{
+				curLineLen++;
+				newText += ' ';
+				crlfDropped = false;
+			}
+			newText += c;
+			curLineLen++;
+		}
+	}
+	text.replaceText(start, end-start, newText );
+
+	setText( text );
+	setChanged();
+	getControl()->setFirstVisible( line );
+	end = start + newText.size();
+	setSelection(start, end);
 }
 
 void WinEditMain::saveFile(WinEditChild	*editor)

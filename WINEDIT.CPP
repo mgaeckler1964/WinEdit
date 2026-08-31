@@ -110,6 +110,7 @@ namespace myProfile
 	static const char Style[] = "Style";
 	static const char tabWidth[] = "tabWidth";
 	static const char lineWidth[] = "lineWidth";
+	static const char blockFormat[] = "blockFormat";
 };
 
 static const char BLOCK_MARKER[] = "\r\n\r\n";
@@ -153,6 +154,7 @@ class WinEditChild : public EditChild
 	void htmlEntities();
 	void changeReadOnly();
 	void formatBlock( BlockFormat format, size_t lineLen );
+	void convertIndent( int command );
 };
 
 class FormatBlockDlg : public ModalDialog
@@ -241,6 +243,7 @@ class WinEditMain : public MDIwindow
 	void unindent();
 	void lineBreak();
 	void formatBlock();
+	void convertIndent( int comand );
 
 	virtual void handleFind( const char *, bool, bool, bool );
 	virtual void handleReplace( const char *, const char *, bool, bool, bool );
@@ -1359,6 +1362,15 @@ void WinEditMain::formatBlock()
 	}
 }
 
+void WinEditMain::convertIndent( int command )
+{
+	WinEditChild	*editor = static_cast<WinEditChild *>(getActiveChild());
+	if( editor )
+	{
+		editor->convertIndent(command);
+	}
+}
+
 void WinEditMain::searchText()
 {
 	SearchDialog	*searchDialog;
@@ -1517,9 +1529,18 @@ ProcessStatus FormatBlockDlg::handleCreate()
 	rightBtn.initHandle( this, BLOCK_RIGHT );
 
 	m_lineLen = application.GetProfile( nullptr, myProfile::lineWidth, 0);
+	m_format =  (WinEditChild::BlockFormat)application.GetProfile( nullptr, myProfile::blockFormat, WinEditChild::bfLEFT);
+
 	linewidth.setText(formatNumber(m_lineLen));
 
-	leftBtn.setActive();
+	if( m_format == WinEditChild::bfBLOCK )
+		blockBtn.setActive();
+	else if( m_format == WinEditChild::bfCENTER )
+		centerBtn.setActive();
+	else if( m_format == WinEditChild::bfRIGHT )
+		rightBtn.setActive();
+	else
+		leftBtn.setActive();
 
 	return psPROCESSED;
 }
@@ -1539,6 +1560,7 @@ ProcessStatus FormatBlockDlg::handleOk()
 		m_format = WinEditChild::bfRIGHT;
 	else
 		m_format = WinEditChild::bfUNKNOWN;
+	application.WriteProfile( false, "", myProfile::blockFormat, m_format );
 
 	return psDO_DEFAULT;
 }
@@ -1728,6 +1750,9 @@ ProcessStatus WinEditMain::handleCommand( int command )
 
 	case EDIT_FORMAT:
 		formatBlock();						break;
+	case EDIT_TAB_INDENT:
+	case EDIT_SPACE_INDENT:
+		convertIndent( command );			break;
 
 	case SEARCH_SEARCH:
 		searchText();						break;
@@ -2149,6 +2174,77 @@ void WinEditChild::formatBlock( BlockFormat format, size_t lineLen )
 	setChanged();
 	getControl()->setFirstVisible( line );
 	end = start + newText.size();
+	setSelection(start, end);
+}
+
+void WinEditChild::convertIndent( int command )
+{
+	int				tabWidth = getTabWidth();
+	bool			toSpaces = command == EDIT_SPACE_INDENT;
+	size_t			start, end;
+	size_t			line = getControl()->getFirstVisible();
+	getSelection(&start, &end);
+	STRING			text = getText();
+	STRING			block = (start==end) ? text : text.subString( start, end-start );
+	STRING			newBlock;
+	newBlock.setMinSize( block.size() );
+	bool			startFlag = true;
+	size_t			curIndent = 0;
+	for( const char *cp = block.c_str(); *cp; ++cp )
+	{
+		if( startFlag && (*cp=='\t' || *cp==' ') )
+		{
+			if( toSpaces )
+			{
+				if( *cp=='\t' )
+				{
+					newBlock.add( ' ', tabWidth-curIndent%tabWidth );
+					curIndent = 0;
+				}
+				else
+				{
+					newBlock.add( ' ' );
+					++curIndent;
+				}
+			}
+			else
+			{
+				if( *cp=='\t' )
+				{
+					curIndent += tabWidth;
+					curIndent -= curIndent%tabWidth;
+				}
+				else
+				{
+					++curIndent;
+				}
+			}
+		}
+		else
+		{
+			if( startFlag && !toSpaces && curIndent )
+			{
+				newBlock.add( '\t', curIndent/tabWidth );
+				newBlock.add( ' ', curIndent%tabWidth );
+			}
+			newBlock += *cp;
+			startFlag = (*cp == '\r' || *cp == '\n');
+			curIndent = 0;	// now we are within the line and we must reset the current indent
+		}
+	}
+
+	if( start == end )
+	{
+		setText( newBlock );
+	}
+	else
+	{
+		text.replaceText(start, end-start, newBlock );
+		setText( text );
+		end = start + newBlock.size();
+	}
+	setChanged();
+	getControl()->setFirstVisible( line );
 	setSelection(start, end);
 }
 

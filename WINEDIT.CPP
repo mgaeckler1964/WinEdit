@@ -172,7 +172,7 @@ class FormatBlockDlg : public ModalDialog
 	public:
 	unsigned getLineLen() const
 	{
-		return m_lineLen; linewidth.getText().getValueN<size_t>();
+		return m_lineLen;
 	}
 
 	WinEditChild::BlockFormat getFormat() const
@@ -523,6 +523,170 @@ static void registerFileType( const STRING &applicationPath, const STRING &appFi
 	{
 		removeFileType( &fType );
 	}
+}
+
+static void concatenate( STRING *block, const char *sep, const STRING &part )
+{
+	if( block->size() )
+	{
+		*block += sep;
+		*block += part;
+	}
+	else
+		*block = part;
+}
+
+static void concatenate( STRING *line, STRING *word, size_t lineLen, ArrayOfStrings *lines )
+{
+	size_t lineSize = line->size();
+	size_t wordSize = word->size();
+
+	if( lineSize && lineSize + 1 + wordSize > lineLen )
+	{
+		lines->addElement( *line );
+		lineSize = 0;
+		*line = "";
+	}
+
+	if( wordSize )
+	{
+		concatenate( line, " ", *word );
+		lineSize = line->size();
+		wordSize = 0;
+		*word = "";
+	}
+
+	if( lineSize ) 
+		lines->addElement( *line );
+}
+
+static void extractLines( const STRING &block, size_t lineLen, ArrayOfStrings *lines )
+{
+	lines->clear();
+	STRING oneLine, oneWord;
+	oneLine.setMinSize( lineLen );
+	bool crlfDropped = false;
+	for( const char *cp = block; *cp; ++cp )
+	{
+		char c = *cp;
+		if( c == '\r' || c=='\n' )
+			crlfDropped = true;
+		else if( (isSpace( c ) || crlfDropped) && oneWord.size() )
+		{
+			if( oneLine.size() + 1 + oneWord.size() > lineLen )
+			{
+				lines->addElement( oneLine );
+				oneLine = oneWord;
+				oneWord = "";
+			}
+			else
+			{
+				concatenate( &oneLine, " ", oneWord );
+				oneWord = "";
+			}
+			crlfDropped = false;
+		}
+		if( !isSpace( c ) )
+		{
+			crlfDropped = false;
+			oneWord += c;
+		}
+	}
+	concatenate( &oneLine, &oneWord, lineLen, lines );
+}
+
+static void rightJustify( ArrayOfStrings &lines, size_t lineLen )
+{
+	for(
+		ArrayOfStrings::iterator it = lines.begin(), endIT = lines.end();
+		it != endIT;
+		++it
+	)
+	{
+		if( it->size() < lineLen )
+			it->insChar(0, ' ', lineLen - it->size() );
+	}
+}
+
+static void centerJustify( ArrayOfStrings &lines, size_t lineLen )
+{
+	for(
+		ArrayOfStrings::iterator it = lines.begin(), endIT = lines.end();
+		it != endIT;
+		++it
+	)
+	{
+		if( it->size() < lineLen )
+			it->insChar(0, ' ', (lineLen - it->size())/2 );
+	}
+}
+
+static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
+{
+	if( !lines.size() )
+		return;
+
+	for(
+		ArrayOfStrings::iterator it = lines.begin(), endIT = lines.end()-1;
+		it != endIT;
+		++it
+	)
+	{
+		if( it->size() < lineLen )
+		{
+			size_t spaceLeft = lineLen - it->size();
+
+			size_t spaceCount = 0;
+			for( const char *cp = it->c_str(); *cp; ++cp )
+			{
+				if( *cp == ' ' )
+				{
+					++spaceCount;
+				}
+			}
+			spaceLeft += spaceCount;
+
+			double oneSpace = double(spaceLeft)/double(spaceCount);
+			ArrayOfStrings	words;
+			words.createElements( *it, " ", true );
+			size_t spaceAdded = 0;
+			double spaceRequired = 0;
+			STRING newLine;
+			for(
+				ArrayOfStrings::iterator it2 = words.begin(), endIT2 = words.end();
+				it2 != endIT2;
+				++it2
+			)
+			{
+				if( newLine.size() )
+				{
+					spaceRequired += oneSpace;
+					size_t spaceRequiredI = size_t(spaceRequired+0.5);
+					size_t thisNewSpace = spaceRequiredI-spaceAdded;
+					newLine.add( ' ', thisNewSpace );
+					spaceAdded += thisNewSpace;
+				}
+				newLine += *it2;
+			}
+			*it = newLine;
+		}
+	}
+}
+
+static STRING buildBlock( const ArrayOfStrings &lines )
+{
+	STRING	block;
+	for(
+		ArrayOfStrings::const_iterator it = lines.cbegin(), endIT = lines.cend();
+		it != endIT;
+		++it
+	)
+	{
+		if( block.size() )
+			block += EOL_MARKER;
+		block += *it;
+	}
+	return block;
 }
 
 // --------------------------------------------------------------------- //
@@ -1356,9 +1520,6 @@ ProcessStatus FormatBlockDlg::handleCreate()
 	linewidth.setText(formatNumber(m_lineLen));
 
 	leftBtn.setActive();
-	blockBtn.disable();
-	centerBtn.disable();
-	rightBtn.disable();
 
 	return psPROCESSED;
 }
@@ -1970,41 +2131,18 @@ void WinEditChild::formatBlock( BlockFormat format, size_t lineLen )
 		}
 	}
 
-	STRING block = text.subString( start, end-start );
-	size_t curLineLen = 0;
-	STRING newText;
-	bool crlfDropped = false;
-	for( const char *cp = block; *cp; ++cp )
-	{
-		char c = *cp;
-		if( (c == '\r' || c=='\n') && curLineLen < lineLen )
-			crlfDropped = (curLineLen > 0);
-		else if( isSpace( c ) )
-		{
-			if( curLineLen >= lineLen )
-			{
-				crlfDropped = false;
-				newText += EOL_MARKER;
-				curLineLen = 0;
-			}
-			else if( curLineLen && !newText.endsWith(' ') )
-			{
-				curLineLen++;
-				newText += ' ';
-			}
-		}
-		else
-		{
-			if( crlfDropped )
-			{
-				curLineLen++;
-				newText += ' ';
-				crlfDropped = false;
-			}
-			newText += c;
-			curLineLen++;
-		}
-	}
+	STRING oldText = text.subString( start, end-start );
+	ArrayOfStrings lines;
+	extractLines( oldText, lineLen, &lines );
+	if( format == bfRIGHT )
+		rightJustify(  lines, lineLen );
+	else if( format == bfCENTER )
+		centerJustify(  lines, lineLen );
+	else if( format == bfBLOCK )
+		blockJustify(  lines, lineLen );
+
+	STRING newText = buildBlock( lines );
+
 	text.replaceText(start, end-start, newText );
 
 	setText( text );

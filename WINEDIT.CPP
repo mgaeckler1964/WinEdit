@@ -2147,22 +2147,29 @@ void WinEditChild::formatBlock( BlockFormat format, size_t lineLen )
 	getSelection(&start, &end);
 	STRING			text = getText();
 
-	for( const char *cp = text+start; ; --start, --cp )
+	if( start )
 	{
-		if( !strncmp(cp, BLOCK_MARKER, sizeof(BLOCK_MARKER)-1 ) )
+		--start;
+		for( const char *cp = text+start; ; --start, --cp )
 		{
-			found = true;
-/*v*/		break;
+			if( !strncmp(cp, BLOCK_MARKER, sizeof(BLOCK_MARKER)-1 ) )
+			{
+				found = true;
+/*v*/			break;
+			}
+			if( !start )
+			{
+				found = false;
+/*v*/			break;
+			}
 		}
-		if( !start )
-		{
-			found = false;
-/*v*/		break;
-		}
+		if( found )
+			start += sizeof(BLOCK_MARKER)-1;
 	}
-	if( found )
-		start += sizeof(BLOCK_MARKER)-1;
-
+	if( end < start )
+	{
+		end = start;
+	}
 	for( const char *cp = text+end; end < text.size(); ++end, ++cp )
 	{
 		if( !strncmp(cp, BLOCK_MARKER, sizeof(BLOCK_MARKER)-1 ) )
@@ -2171,25 +2178,28 @@ void WinEditChild::formatBlock( BlockFormat format, size_t lineLen )
 		}
 	}
 
-	STRING oldText = text.subString( start, end-start );
-	ArrayOfStrings lines;
-	extractLines( oldText, lineLen, &lines );
-	if( format == bfRIGHT )
-		rightJustify(  lines, lineLen );
-	else if( format == bfCENTER )
-		centerJustify(  lines, lineLen );
-	else if( format == bfBLOCK )
-		blockJustify(  lines, lineLen );
+	if( start < end )
+	{
+		STRING			oldText = text.subString( start, end-start );
+		ArrayOfStrings	lines;
+		extractLines( oldText, lineLen, &lines );
+		if( format == bfRIGHT )
+			rightJustify(  lines, lineLen );
+		else if( format == bfCENTER )
+			centerJustify(  lines, lineLen );
+		else if( format == bfBLOCK )
+			blockJustify(  lines, lineLen );
 
-	STRING newText = buildBlock( lines );
+		STRING newText = buildBlock( lines );
 
-	text.replaceText(start, end-start, newText );
+		text.replaceText(start, end-start, newText );
 
-	setText( text );
-	setChanged();
-	getControl()->setFirstVisible( line );
-	end = start + newText.size();
-	setSelection(start, end);
+		setText( text );
+		setChanged();
+		getControl()->setFirstVisible( line );
+		end = start + newText.size();
+		setSelection(start, end);
+	}
 }
 
 void WinEditChild::convertIndent( int command )

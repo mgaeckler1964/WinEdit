@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WINEDIT.DEF">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="WinEdit.ico">
       <Filter>Resource Files</Filter>
     </None>

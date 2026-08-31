@@ -107,6 +107,7 @@ namespace myProfile
 	static const char OpenFiles[] = "OpenFiles";
 	static const char selEnd[] = "selEnd";
 	static const char selStart[] = "selStart";
+	static const char stripLineEnds[] = "stripLineEnds";
 	static const char Style[] = "Style";
 	static const char tabWidth[] = "tabWidth";
 	static const char lineWidth[] = "lineWidth";
@@ -126,6 +127,7 @@ class PreferencesDlg : public ModalDialog
 	CheckBox	backup;
 	CheckBox	autoIndent;
 	CheckBox	autoReload;
+	CheckBox	stripLineEnds;
 
 	private:
 	virtual ProcessStatus handleCreate();
@@ -1210,6 +1212,7 @@ void WinEditMain::preferences()
 	{
 		bool			autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
 		bool			autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
+		bool			stripLineEndsFlag = application.GetProfile( nullptr, myProfile::stripLineEnds, false );
 		unsigned		tabWidth = unsigned(application.GetProfile( nullptr, myProfile::tabWidth, 4 ));
 		WinEditChild	*editor = static_cast<WinEditChild *>(getFirstChild());
 		if( editor ) do
@@ -1223,6 +1226,8 @@ void WinEditMain::preferences()
 				editor->enableAutoReload();
 			else
 				editor->disableAutoReload();
+
+			editor->stripLineEnds() = stripLineEndsFlag;
 
 			editor = static_cast<WinEditChild *>(getNextChild());
 		} while( editor );
@@ -1470,12 +1475,13 @@ ProcessStatus AboutDlg::handleCreate()
 
 ProcessStatus PreferencesDlg::handleCreate()
 {
-	bool	backupFlag, autoIndentFlag, autoReloadFlag;
+	bool	backupFlag, autoIndentFlag, autoReloadFlag, stripLineEndsFlag;
 
 	tabwidth.initHandle( this, TABWIDTH );
 	backup.initHandle( this, CREATE_BACKUP );
 	autoIndent.initHandle( this, IDC_AUTO_INDENT );
 	autoReload.initHandle( this, AUTO_RELOAD );
+	stripLineEnds.initHandle( this, STRIP_LINE_ENDS );
 
 	tabwidth.setText(formatNumber(application.GetProfile( nullptr, myProfile::tabWidth, 4)));
 
@@ -1497,12 +1503,18 @@ ProcessStatus PreferencesDlg::handleCreate()
 	else
 		autoReload.clrActive();
 
+	stripLineEndsFlag = application.GetProfile( nullptr, myProfile::stripLineEnds, false );
+	if( stripLineEndsFlag )
+		stripLineEnds.setActive();
+	else
+		stripLineEnds.clrActive();
+
 	return psPROCESSED;
 }
 
 ProcessStatus PreferencesDlg::handleOk()
 {
-	bool	backupFlag, autoIndentFlag, autoReloadFlag;
+	bool	backupFlag, autoIndentFlag, autoReloadFlag, stripLineEndsFlag;
 
 	application.WriteProfile( false, "", myProfile::tabWidth, tabwidth.getText().getValueN<unsigned>() );
 
@@ -1514,6 +1526,9 @@ ProcessStatus PreferencesDlg::handleOk()
 
 	autoReloadFlag = autoReload.isActive();
 	application.WriteProfile( false, "", myProfile::autoReload, autoReloadFlag );
+
+	stripLineEndsFlag = stripLineEnds.isActive();
+	application.WriteProfile( false, "", myProfile::stripLineEnds, stripLineEndsFlag );
 
 	return psDO_DEFAULT;
 }
@@ -2186,6 +2201,10 @@ void WinEditChild::convertIndent( int command )
 	getSelection(&start, &end);
 	STRING			text = getText();
 	STRING			block = (start==end) ? text : text.subString( start, end-start );
+	if( stripLineEnds() )
+	{
+		block.stripLineEnds();
+	}
 	STRING			newBlock;
 	newBlock.setMinSize( block.size() );
 	bool			startFlag = true;
@@ -2326,6 +2345,9 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 			editor->enableAutoReload();
 		else
 			editor->disableAutoReload();
+
+		bool stripLineEndsFlag = application.GetProfile( nullptr, myProfile::stripLineEnds, false );
+		editor->stripLineEnds() = stripLineEndsFlag;
 
 		newWindow = true;
 	}

@@ -94,12 +94,13 @@
 #define TABWIDTH			102
 #define IDC_AUTO_INDENT		103
 #define AUTO_RELOAD			104
+#define STRIP_LINE_ENDS		105
 
- #define LINE_WIDTH			201
- #define BLOCK_LEFT			202
- #define BLOCK_ALIGN		203
- #define BLOCK_CENTER		204
- #define BLOCK_RIGHT		205
+#define LINE_WIDTH			201
+#define BLOCK_LEFT			202
+#define BLOCK_ALIGN			203
+#define BLOCK_CENTER		204
+#define BLOCK_RIGHT			205
 
 #define INFO_WINDOWS_WIDTH	502
 

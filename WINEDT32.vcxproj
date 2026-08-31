@@ -107,7 +107,6 @@
     <ClCompile Include="WINEDIT.CPP" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="WINEDIT.DEF" />
     <None Include="WinEdit.ico" />
   </ItemGroup>
   <ItemGroup>

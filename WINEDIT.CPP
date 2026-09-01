@@ -6,7 +6,7 @@
 		Address:		Hofmannsthalweg 14, A-4030 Linz
 		Web:			https://www.gaeckler.at/
 
-		Copyright:		(c) 1991-2026 Martin Gäckler
+		Copyright:		(c) 1995-2026 Martin Gäckler
 
 		This program is free software: you can redistribute it and/or modify  
 		it under the terms of the GNU General Public License as published by  
@@ -60,8 +60,10 @@
 #include <winlib/stddlg.h>
 #include <winlib/f_type.h>
 #include <winlib/colors.h>
+#include <winlib/version.h>
 
 #include "winedit.h"
+#include "winedit.gui.h"
 
 // --------------------------------------------------------------------- //
 // ----- module switches ----------------------------------------------- //
@@ -121,25 +123,21 @@ static const char EOL_MARKER[] = "\r\n";
 // ----- class definitions --------------------------------------------- //
 // --------------------------------------------------------------------- //
 
-class PreferencesDlg : public ModalDialog
+class PreferencesDlg : public winlibGUI::PreferencesDlg_form
 {
-	EditControl	tabwidth;
-	CheckBox	backup;
-	CheckBox	autoIndent;
-	CheckBox	autoReload;
-	CheckBox	stripLineEnds;
-
-	private:
+	public:
+	PreferencesDlg() : winlibGUI::PreferencesDlg_form(nullptr) {}
 	virtual ProcessStatus handleCreate();
 	virtual ProcessStatus handleOk();
 };
 
-class AboutDlg : public ModalDialog
+class AboutDlg : public winlibGUI::AboutDlg_form
 {
-	Label	m_windowsWidthLabel;
-
 	private:
 	virtual ProcessStatus handleCreate();
+
+	public:
+	AboutDlg() : winlibGUI::AboutDlg_form(nullptr) {}
 };
 
 class WinEditChild : public EditChild
@@ -159,14 +157,8 @@ class WinEditChild : public EditChild
 	void convertIndent( int command );
 };
 
-class FormatBlockDlg : public ModalDialog
+class FormatBlockDlg : public winlibGUI::FormatBlockDlg_form
 {
-	EditControl					linewidth;
-	RadioButton					leftBtn;
-	RadioButton					blockBtn;
-	RadioButton					centerBtn;
-	RadioButton					rightBtn;
-
 	unsigned					m_lineLen;
 	WinEditChild::BlockFormat	m_format;
 
@@ -174,6 +166,8 @@ class FormatBlockDlg : public ModalDialog
 	virtual ProcessStatus handleOk();
 
 	public:
+	FormatBlockDlg() : winlibGUI::FormatBlockDlg_form(nullptr) {}
+
 	unsigned getLineLen() const
 	{
 		return m_lineLen;
@@ -285,14 +279,14 @@ class WinEditMain : public MDIwindow
 	void updateFileMenu( const STRING &fileName, size_t selStart, size_t selEnd );
 };
 
-class WinEdit : public Application
+class WinEdit : public winlibGUI::GuiApplication
 {
 	virtual bool 			startApplication( HINSTANCE hInstance, const char *cmdLine );
 	virtual CallbackWindow	*createMainWindow( const char *cmdLine, int nCmdShow );
 	virtual void deleteMainWindow( BasicWindow  *mainWindow );
 
 	public:
-	WinEdit() : Application( "EDIT_ICON" ) {}
+	WinEdit() : GuiApplication( EDIT_ICON ) {}
 };
 
 // --------------------------------------------------------------------- //
@@ -1208,7 +1202,7 @@ void WinEditMain::preferences()
 {
 	PreferencesDlg	dialog;
 
-	if( dialog.create( FILE_PREFERENCES, this  ) == IDOK )
+	if( dialog.create( this  ) == scSUCCESS && dialog.getModalResult() == IDOK )
 	{
 		bool			autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
 		bool			autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
@@ -1357,7 +1351,7 @@ void WinEditMain::formatBlock()
 	{
 		FormatBlockDlg	dialog;
 
-		if( dialog.create( EDIT_FORMAT, this  ) == IDOK)
+		if( dialog.create( this  ) == scSUCCESS && dialog.getModalResult() == IDOK )
 		{
 			WinEditChild::BlockFormat	fmt = dialog.getFormat();
 			size_t lineLen = dialog.getLineLen();
@@ -1467,9 +1461,24 @@ void WinEditMain::compareFiles()
 
 ProcessStatus AboutDlg::handleCreate()
 {
-	m_windowsWidthLabel.initHandle(this, INFO_WINDOWS_WIDTH);
-	m_windowsWidthLabel.setText( getWindowsWidth() );
+	ProgramVersionInfo	vi(application.getFileName());
 
+	STRING versionInfo = STRING(vi.getProductName()).add('\n')
+		.add('\n')
+		.add("From ").add( vi.getCompanyName() ).add('\n')
+		.add("Version ").add( vi.getVersionString() ) .add('\n')
+		.add( vi.getLegalCopyRight() ).add('\n')
+		.add( vi.getFileDescription() ).add('\n')
+		.add('\n')
+		.add("Hofmannsthalweg 14\n")
+		.add("A-4030 Linz\n")
+		.add("Phone: +43 - 664 - 54 57 612\n")
+		.add("E-Mail: martin@gaeckler.at\n")
+		.add("https://www.gaeckler.at/")
+	;
+
+	CPUWidthLABEL->setText( getWindowsWidth() );
+	AboutLABEL->setText(versionInfo);
 	return psPROCESSED;
 }
 
@@ -1477,37 +1486,31 @@ ProcessStatus PreferencesDlg::handleCreate()
 {
 	bool	backupFlag, autoIndentFlag, autoReloadFlag, stripLineEndsFlag;
 
-	tabwidth.initHandle( this, TABWIDTH );
-	backup.initHandle( this, CREATE_BACKUP );
-	autoIndent.initHandle( this, IDC_AUTO_INDENT );
-	autoReload.initHandle( this, AUTO_RELOAD );
-	stripLineEnds.initHandle( this, STRIP_LINE_ENDS );
-
-	tabwidth.setText(formatNumber(application.GetProfile( nullptr, myProfile::tabWidth, 4)));
+	tabwidth->setText(formatNumber(application.GetProfile( nullptr, myProfile::tabWidth, 4)));
 
 	backupFlag = application.GetProfile( nullptr, myProfile::backup, true );
 	if( backupFlag )
-		backup.setActive();
+		backup->setActive();
 	else
-		backup.clrActive();
+		backup->clrActive();
 
 	autoIndentFlag = application.GetProfile( nullptr, myProfile::autoIndent, true );
 	if( autoIndentFlag )
-		autoIndent.setActive();
+		autoIndent->setActive();
 	else
-		autoIndent.clrActive();
+		autoIndent->clrActive();
 
 	autoReloadFlag = application.GetProfile( nullptr, myProfile::autoReload, false );
 	if( autoReloadFlag )
-		autoReload.setActive();
+		autoReload->setActive();
 	else
-		autoReload.clrActive();
+		autoReload->clrActive();
 
 	stripLineEndsFlag = application.GetProfile( nullptr, myProfile::stripLineEnds, false );
 	if( stripLineEndsFlag )
-		stripLineEnds.setActive();
+		stripLineEnds->setActive();
 	else
-		stripLineEnds.clrActive();
+		stripLineEnds->clrActive();
 
 	return psPROCESSED;
 }
@@ -1516,68 +1519,64 @@ ProcessStatus PreferencesDlg::handleOk()
 {
 	bool	backupFlag, autoIndentFlag, autoReloadFlag, stripLineEndsFlag;
 
-	application.WriteProfile( false, "", myProfile::tabWidth, tabwidth.getText().getValueN<unsigned>() );
+	application.WriteProfile( false, "", myProfile::tabWidth, tabwidth->getText().getValueN<unsigned>() );
 
-	backupFlag = backup.isActive();
+	backupFlag = backup->isActive();
 	application.WriteProfile( false, "", myProfile::backup, backupFlag );
 
-	autoIndentFlag = autoIndent.isActive();
+	autoIndentFlag = autoIndent->isActive();
 	application.WriteProfile( false, "", myProfile::autoIndent, autoIndentFlag );
 
-	autoReloadFlag = autoReload.isActive();
+	autoReloadFlag = autoReload->isActive();
 	application.WriteProfile( false, "", myProfile::autoReload, autoReloadFlag );
 
-	stripLineEndsFlag = stripLineEnds.isActive();
+	stripLineEndsFlag = stripLineEnds->isActive();
 	application.WriteProfile( false, "", myProfile::stripLineEnds, stripLineEndsFlag );
 
-	return psDO_DEFAULT;
+	return PreferencesDlg_form::handleOk();
 }
 
 
 ProcessStatus FormatBlockDlg::handleCreate()
 {
-	linewidth.initHandle( this, LINE_WIDTH );
-
-	leftBtn.initHandle( this, BLOCK_LEFT );
-	blockBtn.initHandle( this, BLOCK_ALIGN );
-	centerBtn.initHandle( this, BLOCK_CENTER );
-	rightBtn.initHandle( this, BLOCK_RIGHT );
-
 	m_lineLen = application.GetProfile( nullptr, myProfile::lineWidth, 0);
 	m_format =  (WinEditChild::BlockFormat)application.GetProfile( nullptr, myProfile::blockFormat, WinEditChild::bfLEFT);
 
-	linewidth.setText(formatNumber(m_lineLen));
+	linewidth->setText(formatNumber(m_lineLen));
 
 	if( m_format == WinEditChild::bfBLOCK )
-		blockBtn.setActive();
+		blockBtn->setActive();
 	else if( m_format == WinEditChild::bfCENTER )
-		centerBtn.setActive();
+		centerBtn->setActive();
 	else if( m_format == WinEditChild::bfRIGHT )
-		rightBtn.setActive();
+		rightBtn->setActive();
 	else
-		leftBtn.setActive();
+		leftBtn->setActive();
+
+	lwLABEL->move( size_t(0) );
+	linewidth->move( size_t(1) );
 
 	return psPROCESSED;
 }
 
 ProcessStatus FormatBlockDlg::handleOk()
 {
-	m_lineLen = linewidth.getText().getValueN<unsigned>();
+	m_lineLen = linewidth->getText().getValueN<unsigned>();
 	application.WriteProfile( false, "", myProfile::lineWidth, m_lineLen );
 
-	if( leftBtn.isActive() )
+	if( leftBtn->isActive() )
 		m_format = WinEditChild::bfLEFT;
-	else if( blockBtn.isActive() )
+	else if( blockBtn->isActive() )
 		m_format = WinEditChild::bfBLOCK;
-	else if( centerBtn.isActive() )
+	else if( centerBtn->isActive() )
 		m_format = WinEditChild::bfCENTER;
-	else if( rightBtn.isActive() )
+	else if( rightBtn->isActive() )
 		m_format = WinEditChild::bfRIGHT;
 	else
 		m_format = WinEditChild::bfUNKNOWN;
 	application.WriteProfile( false, "", myProfile::blockFormat, m_format );
 
-	return psDO_DEFAULT;
+	return FormatBlockDlg_form::handleOk();
 }
 
 
@@ -1792,7 +1791,7 @@ ProcessStatus WinEditMain::handleCommand( int command )
 	case INFO_ABOUT:
 		{
 			AboutDlg	dlg;
-			dlg.create(command, this );
+			dlg.create( this );
 		}
 
 	default:

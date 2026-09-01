@@ -105,11 +105,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="WINEDIT.CPP" />
+    <ClCompile Include="winedit.gui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="WinEdit.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="winedit.gui.h" />
     <ClInclude Include="WINEDIT.H" />
   </ItemGroup>
   <ItemGroup>

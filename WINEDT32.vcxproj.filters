@@ -18,6 +18,9 @@
     <ClCompile Include="WINEDIT.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="winedit.gui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="WinEdit.ico">
@@ -26,6 +29,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WINEDIT.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="winedit.gui.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

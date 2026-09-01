@@ -6,7 +6,7 @@
 		Address:		Hofmannsthalweg 14, A-4030 Linz
 		Web:			https://www.gaeckler.at/
 
-		Copyright:		(c) 1991-2026 Martin Gäckler
+		Copyright:		(c) 1995-2026 Martin Gäckler
 
 		This program is free software: you can redistribute it and/or modify  
 		it under the terms of the GNU General Public License as published by  
@@ -29,15 +29,13 @@
 		SUCH DAMAGE.
 */
 
-/*
-	Dialogs, menus
-*/
-
-#define MAIN_MENU			100
+#define EDIT_ICON			101
 
 /*
 	menu items
 */
+
+#define MAIN_MENU			100
 
 #define FILE_NEW			101
 #define FILE_OPEN			102
@@ -86,23 +84,6 @@
 #define WIN_CLOSE_ALL		405
 
 #define INFO_ABOUT			501
-
-/*
-	dialog items
-*/
-#define CREATE_BACKUP		101
-#define TABWIDTH			102
-#define IDC_AUTO_INDENT		103
-#define AUTO_RELOAD			104
-#define STRIP_LINE_ENDS		105
-
-#define LINE_WIDTH			201
-#define BLOCK_LEFT			202
-#define BLOCK_ALIGN			203
-#define BLOCK_CENTER		204
-#define BLOCK_RIGHT			205
-
-#define INFO_WINDOWS_WIDTH	502
 
 /*
 	strings

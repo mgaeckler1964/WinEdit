@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<gui>
+<forms>
+<form name="PreferencesDlg" style="281542656" width="265" height="145" baseClass="ModalPopup" id="128" caption="Preferences">
+<child type="CheckBox" name="autoIndent" caption="Auto &amp;Indent" x="8" y="8" width="80" height="24" style="1342242819" id="131" />
+<child type="CheckBox" name="backup" caption="Create &amp;Backup" x="8" y="32" width="104" height="24" style="1342242819" id="132" />
+<child type="CheckBox" name="autoReload" caption="Auto &amp;Reload" x="8" y="56" width="80" height="24" style="1342242819" id="133" />
+<child type="CheckBox" name="stripLineEnds" caption="StripLineEnds" x="8" y="80" width="80" height="24" style="1342242819" id="134" />
+<child type="Label" name="" caption="Tab &amp;Width" x="112" y="8" width="80" height="24" style="1342242827" />
+<child type="EditControl" name="tabwidth" caption="" x="176" y="8" width="80" height="24" style="1350631808" id="135" />
+<child type="PushButton" name="IDOK" caption="&amp;OK" x="8" y="112" width="80" height="24" style="1342242817" id="1" />
+<child type="PushButton" name="IDCANCEL" caption="&amp;Cancel" x="96" y="112" width="80" height="24" style="1342242816" id="2" />
+</form>
+<form name="AboutDlg" style="281542656" width="288" height="207" id="129" baseClass="ModalPopup" caption="About  WinEdit">
+<child type="Label" name="AboutLABEL" caption="Label" x="8" y="8" width="164" height="161" style="1342242816" id="136" />
+<child type="Label" name="CPUWidthLABEL" caption="Label" x="176" y="8" width="80" height="25" style="1342242827" id="137" />
+<child type="PushButton" name="IDOK" caption="&amp;OK" x="8" y="176" width="80" height="25" style="1342242817" id="1" />
+<child type="Label" name="" caption="#101" x="176" y="32" width="32" height="32" style="1342242819" />
+</form>
+<form name="FormatBlockDlg" style="281018368" width="251" height="128" id="130" baseClass="ModalPopup">
+<child type="Label" name="lwLABEL" caption="Line &amp;Width" x="8" y="8" width="0" height="0" style="1342373899" id="138" />
+<child type="EditControl" name="linewidth" caption="" x="80" y="8" width="80" height="24" style="1350631808" id="139" />
+<child type="RadioButton" name="leftBtn" caption="&amp;Left" x="8" y="48" width="60" height="24" style="1342242825" id="140" />
+<child type="RadioButton" name="blockBtn" caption="&amp;Block" x="64" y="48" width="64" height="24" style="1342242825" id="141" />
+<child type="RadioButton" name="centerBtn" caption="&amp;Center" x="128" y="48" width="64" height="24" style="1342242825" id="142" />
+<child type="RadioButton" name="rightBtn" caption="&amp;Right" x="192" y="48" width="80" height="24" style="1342242825" id="143" />
+<child type="PushButton" name="IDOK" caption="&amp;OK" x="8" y="88" width="80" height="24" style="1342242817" id="1" />
+<child type="PushButton" name="IDCANCEL" caption="C&amp;ancel" x="96" y="88" width="80" height="24" style="1342242816" id="2" />
+</form>
+</forms>
+</gui>

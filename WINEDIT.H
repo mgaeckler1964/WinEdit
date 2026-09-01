@@ -30,6 +30,7 @@
 */
 
 #define EDIT_ICON			101
+#define EDIT_ICON_DLG		102
 
 /*
 	menu items

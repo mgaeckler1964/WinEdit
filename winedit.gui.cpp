@@ -29,7 +29,7 @@ namespace winlibGUI {
 "<child type=\"Label\" name=\"AboutLABEL\" caption=\"Label\" x=\"8\" y=\"8\" width=\"164\" height=\"161\" style=\"1342242816\" id=\"136\" />\n"
 "<child type=\"Label\" name=\"CPUWidthLABEL\" caption=\"Label\" x=\"176\" y=\"8\" width=\"80\" height=\"25\" style=\"1342242827\" id=\"137\" />\n"
 "<child type=\"PushButton\" name=\"IDOK\" caption=\"&amp;OK\" x=\"8\" y=\"176\" width=\"80\" height=\"25\" style=\"1342242817\" id=\"1\" />\n"
-"<child type=\"Label\" name=\"\" caption=\"#101\" x=\"176\" y=\"32\" width=\"32\" height=\"32\" style=\"1342242819\" />\n"
+"<child type=\"Label\" name=\"\" caption=\"#102\" x=\"176\" y=\"32\" width=\"32\" height=\"32\" style=\"1342242819\" />\n"
 "</form>\n"
 "<form name=\"FormatBlockDlg\" style=\"281018368\" width=\"251\" height=\"128\" id=\"130\" baseClass=\"ModalPopup\">\n"
 "<child type=\"Label\" name=\"lwLABEL\" caption=\"Line &amp;Width\" x=\"8\" y=\"8\" width=\"0\" height=\"0\" style=\"1342373899\" id=\"138\" />\n"

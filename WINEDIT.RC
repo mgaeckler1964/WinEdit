@@ -166,7 +166,8 @@ STRINGTABLE
  ALL_FILES, "All files|*.*|"
 }
 
-EDIT_ICON ICON "WinEdit.ico"
+EDIT_ICON		ICON "WinEdit.ico"
+EDIT_ICON_DLG	ICON "WinEditDlg.ico"
 
 1 VERSIONINFO 
 FILEVERSION 1, 4, 0, 0

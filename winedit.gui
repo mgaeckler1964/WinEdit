@@ -104,8 +104,8 @@
 <string name="CLOSE_ANYWAY" caption="File %s not saved. Save now?" id="190" />
 </list>
 <list name="FileTypeList">
-<string name="STYLE_SHEETS" caption="Cascading Styles(*.css)|*.css|" id="191" />
-<string name="C_SOURCE_FILES" caption="C(++)-Source(*.cpp;*.c)|*.cpp;*.c|" id="192" />
+<string name="C_SOURCE_FILES" caption="C(++)-Source(*.cpp;*.c)|*.cpp;*.c|" id="191" />
+<string name="STYLE_SHEETS" caption="Cascading Styles(*.css)|*.css|" id="192" />
 <string name="CG_CONFIG" caption="Code Guard Config(*.cgi)|*.cgi|" id="193" />
 <string name="CG_LOG" caption="Code Guard Log(*.cgl)|*.cgl|" id="194" />
 <string name="CONFIG_FILES" caption="Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="195" />
@@ -128,10 +128,10 @@
 <string name="SQL_SCRIPTS" caption="SQL Scripts(*.sql)|*.sql|" id="212" />
 <string name="SYMBOL_TABLES" caption="Symbol Tables(*.map)|*.map|" id="213" />
 <string name="TEXT_FILES" caption="Text files(*.txt)|*.txt|" id="214" />
-<string name="XML_FILES" caption="XML files(*.xml)|*.xml|" id="215" />
-<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="216" />
-<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="217" />
-<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="218" />
+<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="215" />
+<string name="XML_FILES" caption="XML files(*.xml)|*.xml|" id="216" />
+<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="217" />
+<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="218" />
 <string name="ALL_FILES" caption="All files|*.*|" id="219" />
 </list>
 </strings>

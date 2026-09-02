@@ -33,9 +33,9 @@ namespace winlibGUI {
 	const int COMPARE_FILES_id=165;
 	const int CONFIG_FILES_id=195;
 	const int CPUWidthLABEL_id=179;
-	const int C_SOURCE_FILES_id=192;
+	const int C_SOURCE_FILES_id=191;
 	const int DEF_FILES_id=203;
-	const int DTD_FILES_id=218;
+	const int DTD_FILES_id=215;
 	const int EDIT_CLEAR_id=144;
 	const int EDIT_COPY_id=142;
 	const int EDIT_CS_ANSI_id=151;
@@ -96,7 +96,7 @@ namespace winlibGUI {
 	const int SEARCH_SEARCH_id=162;
 	const int SQL_SCRIPTS_id=212;
 	const int stripLineEnds_id=176;
-	const int STYLE_SHEETS_id=191;
+	const int STYLE_SHEETS_id=192;
 	const int SYMBOL_TABLES_id=213;
 	const int tabwidth_id=177;
 	const int TEXT_FILES_id=214;
@@ -107,9 +107,9 @@ namespace winlibGUI {
 	const int WIN_CLOSE_ALL_id=170;
 	const int WIN_TILE_HORIZ_id=166;
 	const int WIN_TILE_VERT_id=167;
-	const int XML_FILES_id=215;
-	const int XSD_FILES_id=216;
-	const int XSL_FILES_id=217;
+	const int XML_FILES_id=216;
+	const int XSD_FILES_id=217;
+	const int XSL_FILES_id=218;
 
 	class GuiApplication : public winlib::Application {
 		public:

@@ -118,8 +118,8 @@ namespace winlibGUI {
 "<string name=\"CLOSE_ANYWAY\" caption=\"File %s not saved. Save now?\" id=\"190\" />\n"
 "</list>\n"
 "<list name=\"FileTypeList\">\n"
-"<string name=\"STYLE_SHEETS\" caption=\"Cascading Styles(*.css)|*.css|\" id=\"191\" />\n"
-"<string name=\"C_SOURCE_FILES\" caption=\"C(++)-Source(*.cpp;*.c)|*.cpp;*.c|\" id=\"192\" />\n"
+"<string name=\"C_SOURCE_FILES\" caption=\"C(++)-Source(*.cpp;*.c)|*.cpp;*.c|\" id=\"191\" />\n"
+"<string name=\"STYLE_SHEETS\" caption=\"Cascading Styles(*.css)|*.css|\" id=\"192\" />\n"
 "<string name=\"CG_CONFIG\" caption=\"Code Guard Config(*.cgi)|*.cgi|\" id=\"193\" />\n"
 "<string name=\"CG_LOG\" caption=\"Code Guard Log(*.cgl)|*.cgl|\" id=\"194\" />\n"
 "<string name=\"CONFIG_FILES\" caption=\"Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|\" id=\"195\" />\n"
@@ -142,10 +142,10 @@ namespace winlibGUI {
 "<string name=\"SQL_SCRIPTS\" caption=\"SQL Scripts(*.sql)|*.sql|\" id=\"212\" />\n"
 "<string name=\"SYMBOL_TABLES\" caption=\"Symbol Tables(*.map)|*.map|\" id=\"213\" />\n"
 "<string name=\"TEXT_FILES\" caption=\"Text files(*.txt)|*.txt|\" id=\"214\" />\n"
-"<string name=\"XML_FILES\" caption=\"XML files(*.xml)|*.xml|\" id=\"215\" />\n"
-"<string name=\"XSD_FILES\" caption=\"XML Schema(*.xsd)|*.xsd|\" id=\"216\" />\n"
-"<string name=\"XSL_FILES\" caption=\"XSL Stylesheets(*.xsl)|*.xsl|\" id=\"217\" />\n"
-"<string name=\"DTD_FILES\" caption=\"XML Document Type Definitions(*.dtd)|*.dtd|\" id=\"218\" />\n"
+"<string name=\"DTD_FILES\" caption=\"XML Document Type Definitions(*.dtd)|*.dtd|\" id=\"215\" />\n"
+"<string name=\"XML_FILES\" caption=\"XML files(*.xml)|*.xml|\" id=\"216\" />\n"
+"<string name=\"XSD_FILES\" caption=\"XML Schema(*.xsd)|*.xsd|\" id=\"217\" />\n"
+"<string name=\"XSL_FILES\" caption=\"XSL Stylesheets(*.xsl)|*.xsl|\" id=\"218\" />\n"
 "<string name=\"ALL_FILES\" caption=\"All files|*.*|\" id=\"219\" />\n"
 "</list>\n"
 "</strings>\n"
@@ -190,8 +190,8 @@ namespace winlibGUI {
 		CLOSE_ANYWAY_id,
 	};
 	const int FileTypeList_ids[] = {
-		STYLE_SHEETS_id,
 		C_SOURCE_FILES_id,
+		STYLE_SHEETS_id,
 		CG_CONFIG_id,
 		CG_LOG_id,
 		CONFIG_FILES_id,
@@ -214,10 +214,10 @@ namespace winlibGUI {
 		SQL_SCRIPTS_id,
 		SYMBOL_TABLES_id,
 		TEXT_FILES_id,
+		DTD_FILES_id,
 		XML_FILES_id,
 		XSD_FILES_id,
 		XSL_FILES_id,
-		DTD_FILES_id,
 		ALL_FILES_id,
 	};
 }	// namespace winlibGUI

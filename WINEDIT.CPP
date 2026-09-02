@@ -720,7 +720,22 @@ inline SuccessCode WinEditMain::create( int nCmdShow )
 	if( MDIwindow::create( MAIN_MENU, WINDOW_MENU ) == scERROR )
 		return scERROR;
 
-	setAccelerators( MAIN_MENU );
+	static ACCEL accelerators[] =
+	{
+		{ FVIRTKEY|FCONTROL,	'A', EDIT_SELECT_ALL },
+		{ FVIRTKEY|FCONTROL,	'B', EDIT_FORMAT },
+		{ FVIRTKEY|FCONTROL,	'F', SEARCH_SEARCH },
+		{ FVIRTKEY|FCONTROL,	'I', EDIT_INDENT },
+		{ FVIRTKEY|FCONTROL,	'L', SEARCH_NEXT },
+		{ FVIRTKEY|FCONTROL,	'N', FILE_NEW },
+		{ FVIRTKEY|FCONTROL,	'O', FILE_OPEN },
+		{ FVIRTKEY|FCONTROL,	'R', SEARCH_REPLACE },
+		{ FVIRTKEY|FCONTROL,	'S', FILE_SAVE },
+		{ FVIRTKEY|FCONTROL,	'U', EDIT_UNINDENT },
+		{ FVIRTKEY|FALT,		'X', FILE_QUIT },
+		{ FVIRTKEY|FCONTROL,	'Y', EDIT_DELETE_LINE },
+	};
+	setAccelerators( accelerators, int(arraySize( accelerators )) );
 
 	acceptFiles();
 

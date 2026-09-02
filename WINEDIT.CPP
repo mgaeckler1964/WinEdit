@@ -83,6 +83,7 @@
 
 using namespace gak;
 using namespace winlib;
+using namespace winlibGUI;
 
 // --------------------------------------------------------------------- //
 // ----- constants ----------------------------------------------------- //
@@ -123,21 +124,21 @@ static const char EOL_MARKER[] = "\r\n";
 // ----- class definitions --------------------------------------------- //
 // --------------------------------------------------------------------- //
 
-class PreferencesDlg : public winlibGUI::PreferencesDlg_form
+class PreferencesDlg : public PreferencesDlg_form
 {
 	public:
-	PreferencesDlg() : winlibGUI::PreferencesDlg_form(nullptr) {}
+	PreferencesDlg() : PreferencesDlg_form(nullptr) {}
 	virtual ProcessStatus handleCreate();
 	virtual ProcessStatus handleOk();
 };
 
-class AboutDlg : public winlibGUI::AboutDlg_form
+class AboutDlg : public AboutDlg_form
 {
 	private:
 	virtual ProcessStatus handleCreate();
 
 	public:
-	AboutDlg() : winlibGUI::AboutDlg_form(nullptr) {}
+	AboutDlg() : AboutDlg_form(nullptr) {}
 };
 
 class WinEditChild : public EditChild
@@ -157,7 +158,7 @@ class WinEditChild : public EditChild
 	void convertIndent( int command );
 };
 
-class FormatBlockDlg : public winlibGUI::FormatBlockDlg_form
+class FormatBlockDlg : public FormatBlockDlg_form
 {
 	unsigned					m_lineLen;
 	WinEditChild::BlockFormat	m_format;
@@ -166,7 +167,7 @@ class FormatBlockDlg : public winlibGUI::FormatBlockDlg_form
 	virtual ProcessStatus handleOk();
 
 	public:
-	FormatBlockDlg() : winlibGUI::FormatBlockDlg_form(nullptr) {}
+	FormatBlockDlg() : FormatBlockDlg_form(nullptr) {}
 
 	unsigned getLineLen() const
 	{
@@ -279,7 +280,7 @@ class WinEditMain : public MDIwindow
 	void updateFileMenu( const STRING &fileName, size_t selStart, size_t selEnd );
 };
 
-class WinEdit : public winlibGUI::GuiApplication
+class WinEdit : public GuiApplication
 {
 	virtual bool 			startApplication( HINSTANCE hInstance, const char *cmdLine );
 	virtual CallbackWindow	*createMainWindow( const char *cmdLine, int nCmdShow );
@@ -717,25 +718,30 @@ WinEditMain::~WinEditMain()
 inline SuccessCode WinEditMain::create( int nCmdShow )
 {
 	setText( appName );
-	if( MDIwindow::create( MAIN_MENU, WINDOW_MENU ) == scERROR )
-		return scERROR;
 
 	static ACCEL accelerators[] =
 	{
-		{ FVIRTKEY|FCONTROL,	'A', EDIT_SELECT_ALL },
-		{ FVIRTKEY|FCONTROL,	'B', EDIT_FORMAT },
-		{ FVIRTKEY|FCONTROL,	'F', SEARCH_SEARCH },
-		{ FVIRTKEY|FCONTROL,	'I', EDIT_INDENT },
-		{ FVIRTKEY|FCONTROL,	'L', SEARCH_NEXT },
-		{ FVIRTKEY|FCONTROL,	'N', FILE_NEW },
-		{ FVIRTKEY|FCONTROL,	'O', FILE_OPEN },
-		{ FVIRTKEY|FCONTROL,	'R', SEARCH_REPLACE },
-		{ FVIRTKEY|FCONTROL,	'S', FILE_SAVE },
-		{ FVIRTKEY|FCONTROL,	'U', EDIT_UNINDENT },
-		{ FVIRTKEY|FALT,		'X', FILE_QUIT },
-		{ FVIRTKEY|FCONTROL,	'Y', EDIT_DELETE_LINE },
+		{ FVIRTKEY|FCONTROL,	'A', EDIT_SELECT_ALL_id },
+		{ FVIRTKEY|FCONTROL,	'B', EDIT_FORMAT_id },
+		{ FVIRTKEY|FCONTROL,	'C', EDIT_COPY_id },
+		{ FVIRTKEY|FCONTROL,	'F', SEARCH_SEARCH_id },
+		{ FVIRTKEY|FCONTROL,	'I', EDIT_INDENT_id },
+		{ FVIRTKEY|FCONTROL,	'L', SEARCH_NEXT_id },
+		{ FVIRTKEY|FCONTROL,	'N', FILE_NEW_id },
+		{ FVIRTKEY|FCONTROL,	'O', FILE_OPEN_id },
+		{ FVIRTKEY|FCONTROL,	'R', SEARCH_REPLACE_id },
+		{ FVIRTKEY|FCONTROL,	'S', FILE_SAVE_id },
+		{ FVIRTKEY|FCONTROL,	'U', EDIT_UNINDENT_id },
+		{ FVIRTKEY|FCONTROL,	'V', EDIT_PASTE_id },
+		{ FVIRTKEY|FCONTROL,	'X', EDIT_CUT_id },
+		{ FVIRTKEY|FALT,		'X', FILE_QUIT_id },
+		{ FVIRTKEY|FCONTROL,	'Y', EDIT_DELETE_LINE_id },
+		{ FVIRTKEY|FCONTROL,	'Z', EDIT_UNDO_id },
 	};
 	setAccelerators( accelerators, int(arraySize( accelerators )) );
+
+	if( MDIwindow::create( MENU_id, WINDOW_MENU ) == scERROR )
+		return scERROR;
 
 	acceptFiles();
 
@@ -1099,26 +1105,26 @@ void WinEditMain::changeCharset( EDIT::EditCharset newCharset, bool flipBOM )
 		if( newCharset != EDIT::csUTF8 )
 		{
 			editor->withBOM() = false;
-			getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+			getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM_id );
 		}
 		else if(flipBOM)
 		{
 			if( oldCharset != EDIT::csUTF8 )
 			{
 				editor->withBOM() = true;
-				getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM );
+				getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM_id );
 			}
 			else
 			{
 				if( editor->withBOM() )
 				{
 					editor->withBOM() = false;
-					getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+					getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM_id );
 				}
 				else
 				{
 					editor->withBOM() = true;
-					getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM );
+					getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM_id );
 				}
 			}
 		}
@@ -1132,18 +1138,18 @@ void WinEditMain::changeCharset( EDIT::EditCharset newCharset, bool flipBOM )
 				editor->setCharset( newCharset );
 
 			if( oldCharset == EDIT::csOEM )
-				getMenu()->uncheckMenuItem( EDIT_OEM_CONVERT );
+				getMenu()->uncheckMenuItem( EDIT_OEM_CONVERT_id );
 			else if( oldCharset == EDIT::csANSI )
-				getMenu()->uncheckMenuItem( EDIT_CS_ANSI );
+				getMenu()->uncheckMenuItem( EDIT_CS_ANSI_id );
 			else if( oldCharset == EDIT::csUTF8 )
-				getMenu()->uncheckMenuItem( EDIT_CS_UTF8 );
+				getMenu()->uncheckMenuItem( EDIT_CS_UTF8_id );
 
 			if( newCharset == EDIT::csOEM )
-				getMenu()->checkMenuItem( EDIT_OEM_CONVERT );
+				getMenu()->checkMenuItem( EDIT_OEM_CONVERT_id );
 			else if( newCharset == EDIT::csANSI )
-				getMenu()->checkMenuItem( EDIT_CS_ANSI );
+				getMenu()->checkMenuItem( EDIT_CS_ANSI_id );
 			else if( newCharset == EDIT::csUTF8 )
-				getMenu()->checkMenuItem( EDIT_CS_UTF8 );
+				getMenu()->checkMenuItem( EDIT_CS_UTF8_id );
 
 			STRING theFileName = editor->getFileName();
 			for( size_t i=0; i<MAX_FILE_LIST; i++ )
@@ -1602,42 +1608,40 @@ void WinEditChild::handleFocus()
 	enum EDIT::EditCharset charSet = getCharset();
 
 	if( charSet == EDIT::csOEM )
-		mainWindow->getMenu()->checkMenuItem( EDIT_OEM_CONVERT );
+		mainWindow->getMenu()->checkMenuItem( EDIT_OEM_CONVERT_id );
 	else
-		mainWindow->getMenu()->uncheckMenuItem( EDIT_OEM_CONVERT );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_OEM_CONVERT_id );
 
 	if( charSet == EDIT::csANSI )
-		mainWindow->getMenu()->checkMenuItem( EDIT_CS_ANSI );
+		mainWindow->getMenu()->checkMenuItem( EDIT_CS_ANSI_id );
 	else
-		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_ANSI );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_ANSI_id );
 
 	if( charSet == EDIT::csUTF8 )
 	{
-		mainWindow->getMenu()->checkMenuItem( EDIT_CS_UTF8 );
+		mainWindow->getMenu()->checkMenuItem( EDIT_CS_UTF8_id );
 		if( withBOM() )
 		{
-			mainWindow->getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM );
+			mainWindow->getMenu()->checkMenuItem( EDIT_CS_UTF8_BOM_id );
 		}
 		else
 		{
-			mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+			mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM_id );
 		}
 	}
 	else
 	{
-		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8 );
-		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_id );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM_id );
 	}
-
 	if( isLineBreak() )
 		mainWindow->getMenu()->checkMenuItem( EDIT_BREAK );
 	else
 		mainWindow->getMenu()->uncheckMenuItem( EDIT_BREAK );
-
 	if( !isEditable() )
-		mainWindow->getMenu()->checkMenuItem( EDIT_READ_ONLY );
+		mainWindow->getMenu()->checkMenuItem( EDIT_READ_ONLY_id );
 	else
-		mainWindow->getMenu()->uncheckMenuItem( EDIT_READ_ONLY );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_READ_ONLY_id );
 
 	mainWindow->checkLineEnd( getLineEnd() );
 
@@ -1711,99 +1715,99 @@ ProcessStatus WinEditMain::handleCommand( int command )
 {
 	switch( command )
 	{
-	case FILE_NEW:
+	case FILE_NEW_id:
 		openFile( nullptr );				break;
-	case FILE_OPEN:
+	case FILE_OPEN_id:
 		openFile();							break;
-	case FILE_SAVE:
+	case FILE_SAVE_id:
 		saveFile();							break;
-	case FILE_SAVE_ALL:
+	case FILE_SAVE_ALL_id:
 		saveAllFiles();						break;
 
-	case FILE_SAVE_AS:
+	case FILE_SAVE_AS_id:
 		saveFileAs();						break;
 
-	case FILE_PRINT:
+	case FILE_PRINT_id:
 		print();							break;
 
-	case FILE_PREFERENCES:
+	case FILE_PREFERENCES_id:
 		preferences();						break;
 
-	case FILE_FONT:
+	case FILE_FONT_id:
 		selectFont();						break;
 
-	case FILE_QUIT:
+	case FILE_QUIT_id:
 		handleClose();						break;
 
-	case EDIT_UNDO:
+	case EDIT_UNDO_id:
 		undo();								break;
-	case EDIT_CUT:
+	case EDIT_CUT_id:
 		cut();								break;
-	case EDIT_COPY:
+	case EDIT_COPY_id:
 		copy();								break;
-	case EDIT_PASTE:
+	case EDIT_PASTE_id:
 		paste();							break;
-	case EDIT_CLEAR:
+	case EDIT_CLEAR_id:
 		clear();							break;
-	case EDIT_SELECT_ALL:
+	case EDIT_SELECT_ALL_id:
 		selectAll();						break;
-	case EDIT_DELETE_LINE:
+	case EDIT_DELETE_LINE_id:
 		deleteLine();						break;
-	case EDIT_INDENT:
+	case EDIT_INDENT_id:
 		indent();							break;
-	case EDIT_UNINDENT:
+	case EDIT_UNINDENT_id:
 		unindent();							break;
 	case EDIT_BREAK:
 		lineBreak();						break;
-	case EDIT_OEM_CONVERT:
+	case EDIT_OEM_CONVERT_id:
 		changeCharset( EDIT::csOEM );		break;
-	case EDIT_CS_ANSI:
+	case EDIT_CS_ANSI_id:
 		changeCharset( EDIT::csANSI );		break;
-	case EDIT_CS_UTF8:
+	case EDIT_CS_UTF8_id:
 		changeCharset( EDIT::csUTF8 );		break;
-	case EDIT_CS_UTF8_BOM:
+	case EDIT_CS_UTF8_BOM_id:
 		changeCharset(EDIT::csUTF8,true);	break;
-	case EDIT_HTML_ENTITIES:
+	case EDIT_HTML_ENTITIES_id:
 		htmlEntities();						break;
 
-	case EDIT_LINE_CR:
+	case EDIT_LINE_CR_id:
 		changeLineEnd(RL_END_CR);			break;
-	case EDIT_LINE_CRLF:
+	case EDIT_LINE_CRLF_id:
 		changeLineEnd(RL_END_CRLF);			break;
-	case EDIT_LINE_LF:
+	case EDIT_LINE_LF_id:
 		changeLineEnd(RL_END_LF);			break;
-	case EDIT_LINE_LFCR:
+	case EDIT_LINE_LFCR_id:
 		changeLineEnd(RL_END_LFCR);			break;
-	case EDIT_READ_ONLY:
+	case EDIT_READ_ONLY_id:
 		changeReadOnly();					break;
 
-	case EDIT_FORMAT:
+	case EDIT_FORMAT_id:
 		formatBlock();						break;
-	case EDIT_TAB_INDENT:
-	case EDIT_SPACE_INDENT:
+	case EDIT_TAB_INDENT_id:
+	case EDIT_SPACE_INDENT_id:
 		convertIndent( command );			break;
 
-	case SEARCH_SEARCH:
+	case SEARCH_SEARCH_id:
 		searchText();						break;
-	case SEARCH_REPLACE:
+	case SEARCH_REPLACE_id:
 		replaceText();						break;
-	case SEARCH_NEXT:
+	case SEARCH_NEXT_id:
 		searchNext();						break;
-	case COMPARE_FILES:
+	case COMPARE_FILES_id:
 		compareFiles();						break;
 
-	case WIN_TILE_HORIZ:
+	case WIN_TILE_HORIZ_id:
 		tileChildren();						break;
-	case WIN_TILE_VERT:
+	case WIN_TILE_VERT_id:
 		tileChildren( false );				break;
-	case WIN_CASCADE:
+	case WIN_CASCADE_id:
 		cascadeChildren();					break;
-	case WIN_ARRANGE:
+	case WIN_ARRANGE_id:
 		arrangeIcons();						break;
-	case WIN_CLOSE_ALL:
+	case WIN_CLOSE_ALL_id:
 		closeAll();							break;
 
-	case INFO_ABOUT:
+	case INFO_ABOUT_id:
 		{
 			AboutDlg	dlg;
 			dlg.create( this );
@@ -1925,11 +1929,11 @@ void WinEditMain::handleTimer()
 			if(modified)
 			{
 				newStatus += " modified";
-				getMenu()->enableMenuItem( FILE_SAVE );
+				getMenu()->enableMenuItem( FILE_SAVE_id );
 			}
 			else
 			{
-				getMenu()->disableMenuItem( FILE_SAVE );
+				getMenu()->disableMenuItem( FILE_SAVE_id );
 			}
 			setStatusText( newStatus );
 
@@ -2219,7 +2223,7 @@ void WinEditChild::formatBlock( BlockFormat format, size_t lineLen )
 void WinEditChild::convertIndent( int command )
 {
 	int				tabWidth = getTabWidth();
-	bool			toSpaces = command == EDIT_SPACE_INDENT;
+	bool			toSpaces = command == EDIT_SPACE_INDENT_id;
 	size_t			start, end;
 	size_t			line = getControl()->getFirstVisible();
 	getSelection(&start, &end);
@@ -2421,10 +2425,10 @@ void WinEditMain::checkLineEnd( RLINE_ENDS newLineEnd )
 
 	switch( newLineEnd )
 	{
-		case RL_END_CR:		menuItem = EDIT_LINE_CR;	break;
-		case RL_END_LF:		menuItem = EDIT_LINE_LF;	break;
-		case RL_END_CRLF:	menuItem = EDIT_LINE_CRLF;	break;
-		case RL_END_LFCR:	menuItem = EDIT_LINE_LFCR;	break;
+		case RL_END_CR:		menuItem = EDIT_LINE_CR_id;		break;
+		case RL_END_LF:		menuItem = EDIT_LINE_LF_id;		break;
+		case RL_END_CRLF:	menuItem = EDIT_LINE_CRLF_id;	break;
+		case RL_END_LFCR:	menuItem = EDIT_LINE_LFCR_id;	break;
 	}
 
 	if( menuItem > 0 )

@@ -31,60 +31,10 @@
 
 #define EDIT_ICON			101
 #define EDIT_ICON_DLG		102
-
-/*
-	menu items
-*/
-
-#define MAIN_MENU			100
-
-#define FILE_NEW			101
-#define FILE_OPEN			102
-#define FILE_SAVE			103
-#define FILE_SAVE_AS		104
-#define FILE_SAVE_ALL		105
-#define FILE_QUIT			109
-#define FILE_PREFERENCES	110
-#define FILE_FONT			111
-#define FILE_PRINT			112
-
-#define EDIT_UNDO			201
-#define EDIT_CUT			202
-#define EDIT_COPY			203
-#define EDIT_PASTE			204
-#define EDIT_CLEAR			205
-#define EDIT_LINE_CRLF		206
-#define EDIT_LINE_LF		207
-#define EDIT_LINE_CR		208
-#define EDIT_LINE_LFCR		209
-#define EDIT_OEM_CONVERT	210
-#define EDIT_INDENT			211
-#define EDIT_UNINDENT		212
-#define EDIT_BREAK			213
-#define EDIT_SELECT_ALL		214
-#define EDIT_DELETE_LINE	215
-#define EDIT_HTML_ENTITIES	216
-#define EDIT_CS_ANSI		217
-#define EDIT_CS_UTF8		218
-#define EDIT_CS_UTF8_BOM	219
-#define EDIT_READ_ONLY		220
-#define EDIT_FORMAT			221
-#define EDIT_TAB_INDENT		222
-#define EDIT_SPACE_INDENT	223
-
-#define SEARCH_SEARCH		301
-#define SEARCH_REPLACE		302
-#define SEARCH_NEXT			303
-#define COMPARE_FILES		304
-
 #define WINDOW_MENU			3
-#define WIN_TILE_HORIZ		401
-#define WIN_TILE_VERT		402
-#define WIN_CASCADE			403
-#define WIN_ARRANGE			404
-#define WIN_CLOSE_ALL		405
-
-#define INFO_ABOUT			501
+#define EDIT_BREAK			666		// this is a marke for an old menu entry
+									// I want to re-enable this old menu entry
+									// in future
 
 /*
 	strings

@@ -2,48 +2,6 @@
 
 #include "winedit.h"
 
-STRINGTABLE
-{
- NOREGISTER, "Unable to register window class"
- NOWINDOW, "Unable to open window"
- UNTITLED, "Untitled"
- WARNING, "Warning"
- CLOSE_ANYWAY, "File %s not saved. Save now?"
-}
-
-STRINGTABLE
-{
- STYLE_SHEETS, "Cascading Styles(*.css)|*.css|"
- C_SOURCE_FILES, "C(++)-Source(*.cpp;*.c)|*.cpp;*.c|"
- CG_CONFIG, "Code Guard Config(*.cgi)|*.cgi|"
- CG_LOG, "Code Guard Log(*.cgl)|*.cgl|"
- CONFIG_FILES, "Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|"
- HEADER_FILES, "Headerfiles(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|"
- HELP_PROJECTS, "Help Projects(*.hpj)|*.hpj|"
- HTML_FILES, "HTML Files(*.html;*.htm)|*.html;*.htm|"
- JAVA_SCRIPTS, "Java-Scripts(*.js)|*.js|"
- JAVA_FILES, "Java-Source(*.java)|*.java|"
- LIVELINK_FILES, "Livelink(*.out)|*.out|"
- MAKE_FILES, "Makefiles(*.mak)|*.mak|"
- DEF_FILES, "Module Definitionfiles(*.def)|*.def|"
- BATCH_FILES, "MSDOS-Batch files(*.bat;*.cmd)|*.bat;*.cmd|"
- OPL_FILES, "OpenUI Source(*.opl)|*.opl|"
- PASCAL_FILES, "Pascal-Source(*.pas)|*.pas|"
- PHP_FILES, "PHP-Source(*.php)|*.php|"
- PROC_FILES, "Pro*C/C++ spource(*.pc)|*.pc|"
- PROT_FILES, "Protocols(*.log)|*.log|"
- REGISTRATION_FILES, "Registrations (*.reg)|*.reg|"
- RESSOURCE_FILES, "Ressource(*.rc)|*.rc|"
- SQL_SCRIPTS, "SQL Scripts(*.sql)|*.sql|"
- SYMBOL_TABLES, "Symbol Tables(*.map)|*.map|"
- TEXT_FILES, "Text files(*.txt)|*.txt|"
- XML_FILES, "XML files(*.xml)|*.xml|"
- XSD_FILES, "XML Schema(*.xsd)|*.xsd|"
- XSL_FILES, "XSL Stylesheets(*.xsl)|*.xsl|"
- DTD_FILES, "XML Document Type Definitions(*.dtd)|*.dtd|"
- ALL_FILES, "All files|*.*|"
-}
-
 EDIT_ICON		ICON "WinEdit.ico"
 EDIT_ICON_DLG	ICON "WinEditDlg.ico"
 

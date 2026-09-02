@@ -31,47 +31,7 @@
 
 #define EDIT_ICON			101
 #define EDIT_ICON_DLG		102
-#define WINDOW_MENU			3
-#define EDIT_BREAK			666		// this is a marke for an old menu entry
+#define WINDOW_MENU			3		/// TODO auto generate with GUI Builder if possible
+#define EDIT_BREAK			666		// this is a marker for an old menu entry
 									// I want to re-enable this old menu entry
 									// in future
-
-/*
-	strings
-*/
-#define NOREGISTER			1
-#define NOWINDOW			2
-#define UNTITLED			3
-#define WARNING				4
-#define CLOSE_ANYWAY		5
-
-#define STYLE_SHEETS		10
-#define C_SOURCE_FILES		11
-#define CG_CONFIG			12
-#define CG_LOG				13
-#define CONFIG_FILES		14
-#define HEADER_FILES		15
-#define HELP_PROJECTS		16
-#define HTML_FILES			17
-#define JAVA_SCRIPTS		18
-#define JAVA_FILES			19
-#define LIVELINK_FILES		20
-#define MAKE_FILES			21
-#define DEF_FILES			22
-#define BATCH_FILES			23
-#define OPL_FILES			24
-#define PASCAL_FILES		25
-#define PHP_FILES			26
-#define PROC_FILES			27
-#define PROT_FILES			28
-#define REGISTRATION_FILES	29
-#define RESSOURCE_FILES		30
-#define SQL_SCRIPTS			31
-#define SYMBOL_TABLES		32
-#define TEXT_FILES			33
-#define XML_FILES			34
-#define XSD_FILES			35
-#define XSL_FILES			36
-#define DTD_FILES			37
-#define ALL_FILES			38
-

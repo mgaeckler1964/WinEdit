@@ -109,6 +109,46 @@ namespace winlibGUI {
 "</menu>\n"
 "</menu>\n"
 "</menus>\n"
+"<strings>\n"
+"<list name=\"STRINGLIST\">\n"
+"<string name=\"NOREGISTER\" caption=\"Unable to register window class\" id=\"186\" />\n"
+"<string name=\"NOWINDOW\" caption=\"Unable to open window\" id=\"187\" />\n"
+"<string name=\"UNTITLED\" caption=\"Untitled\" id=\"188\" />\n"
+"<string name=\"WARNING\" caption=\"Warning\" id=\"189\" />\n"
+"<string name=\"CLOSE_ANYWAY\" caption=\"File %s not saved. Save now?\" id=\"190\" />\n"
+"</list>\n"
+"<list name=\"FileTypeList\">\n"
+"<string name=\"STYLE_SHEETS\" caption=\"Cascading Styles(*.css)|*.css|\" id=\"191\" />\n"
+"<string name=\"C_SOURCE_FILES\" caption=\"C(++)-Source(*.cpp;*.c)|*.cpp;*.c|\" id=\"192\" />\n"
+"<string name=\"CG_CONFIG\" caption=\"Code Guard Config(*.cgi)|*.cgi|\" id=\"193\" />\n"
+"<string name=\"CG_LOG\" caption=\"Code Guard Log(*.cgl)|*.cgl|\" id=\"194\" />\n"
+"<string name=\"CONFIG_FILES\" caption=\"Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|\" id=\"195\" />\n"
+"<string name=\"HEADER_FILES\" caption=\"Headerfiles(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|\" id=\"196\" />\n"
+"<string name=\"HELP_PROJECTS\" caption=\"Help Projects(*.hpj)|*.hpj|\" id=\"197\" />\n"
+"<string name=\"HTML_FILES\" caption=\"HTML Files(*.html;*.htm)|*.html;*.htm|\" id=\"198\" />\n"
+"<string name=\"JAVA_SCRIPTS\" caption=\"Java-Scripts(*.js)|*.js|\" id=\"199\" />\n"
+"<string name=\"JAVA_FILES\" caption=\"Java-Source(*.java)|*.java|\" id=\"200\" />\n"
+"<string name=\"LIVELINK_FILES\" caption=\"Livelink(*.out)|*.out|\" id=\"201\" />\n"
+"<string name=\"MAKE_FILES\" caption=\"Makefiles(*.mak)|*.mak|\" id=\"202\" />\n"
+"<string name=\"DEF_FILES\" caption=\"Module Definitionfiles(*.def)|*.def|\" id=\"203\" />\n"
+"<string name=\"BATCH_FILES\" caption=\"MSDOS-Batch files(*.bat;*.cmd)|*.bat;*.cmd|\" id=\"204\" />\n"
+"<string name=\"OPL_FILES\" caption=\"OpenUI Source(*.opl)|*.opl|\" id=\"205\" />\n"
+"<string name=\"PASCAL_FILES\" caption=\"Pascal-Source(*.pas)|*.pas|\" id=\"206\" />\n"
+"<string name=\"PHP_FILES\" caption=\"PHP-Source(*.php)|*.php|\" id=\"207\" />\n"
+"<string name=\"PROC_FILES\" caption=\"Pro*C/C++ spource(*.pc)|*.pc|\" id=\"208\" />\n"
+"<string name=\"PROT_FILES\" caption=\"Protocols(*.log)|*.log|\" id=\"209\" />\n"
+"<string name=\"REGISTRATION_FILES\" caption=\"Registrations (*.reg)|*.reg|\" id=\"210\" />\n"
+"<string name=\"RESSOURCE_FILES\" caption=\"Ressource(*.rc)|*.rc|\" id=\"211\" />\n"
+"<string name=\"SQL_SCRIPTS\" caption=\"SQL Scripts(*.sql)|*.sql|\" id=\"212\" />\n"
+"<string name=\"SYMBOL_TABLES\" caption=\"Symbol Tables(*.map)|*.map|\" id=\"213\" />\n"
+"<string name=\"TEXT_FILES\" caption=\"Text files(*.txt)|*.txt|\" id=\"214\" />\n"
+"<string name=\"XML_FILES\" caption=\"XML files(*.xml)|*.xml|\" id=\"215\" />\n"
+"<string name=\"XSD_FILES\" caption=\"XML Schema(*.xsd)|*.xsd|\" id=\"216\" />\n"
+"<string name=\"XSL_FILES\" caption=\"XSL Stylesheets(*.xsl)|*.xsl|\" id=\"217\" />\n"
+"<string name=\"DTD_FILES\" caption=\"XML Document Type Definitions(*.dtd)|*.dtd|\" id=\"218\" />\n"
+"<string name=\"ALL_FILES\" caption=\"All files|*.*|\" id=\"219\" />\n"
+"</list>\n"
+"</strings>\n"
 "</gui>";
 			return Application::getGuiDoc( xmlSrc );
 		}
@@ -142,4 +182,42 @@ namespace winlibGUI {
 		IDOK_PushButton=static_cast<winlib::PushButton*>(findChild(IDOK));
 		IDCANCEL_PushButton=static_cast<winlib::PushButton*>(findChild(IDCANCEL));
 	}	// FormatBlockDlg
+	const int STRINGLIST_ids[] = {
+		NOREGISTER_id,
+		NOWINDOW_id,
+		UNTITLED_id,
+		WARNING_id,
+		CLOSE_ANYWAY_id,
+	};
+	const int FileTypeList_ids[] = {
+		STYLE_SHEETS_id,
+		C_SOURCE_FILES_id,
+		CG_CONFIG_id,
+		CG_LOG_id,
+		CONFIG_FILES_id,
+		HEADER_FILES_id,
+		HELP_PROJECTS_id,
+		HTML_FILES_id,
+		JAVA_SCRIPTS_id,
+		JAVA_FILES_id,
+		LIVELINK_FILES_id,
+		MAKE_FILES_id,
+		DEF_FILES_id,
+		BATCH_FILES_id,
+		OPL_FILES_id,
+		PASCAL_FILES_id,
+		PHP_FILES_id,
+		PROC_FILES_id,
+		PROT_FILES_id,
+		REGISTRATION_FILES_id,
+		RESSOURCE_FILES_id,
+		SQL_SCRIPTS_id,
+		SYMBOL_TABLES_id,
+		TEXT_FILES_id,
+		XML_FILES_id,
+		XSD_FILES_id,
+		XSL_FILES_id,
+		DTD_FILES_id,
+		ALL_FILES_id,
+	};
 }	// namespace winlibGUI

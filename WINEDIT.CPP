@@ -1017,7 +1017,7 @@ void WinEditMain::openFile()
 	fileDlg.setDirectory( directory );
 	if( fileDlg.create( this,
 						0,
-						C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 )
+						FileTypeList_ids, FileTypeList_count )
 	)
 	{
 		application.WriteProfile( false, nullptr, myProfile::filterIndex, fileDlg.getFilterIndex() );
@@ -1079,7 +1079,7 @@ void WinEditMain::saveFileAs(WinEditChild	*editor)
 	saveDialog.setFilename( fileName );
 	if( saveDialog.create( this,
 							0,
-							C_SOURCE_FILES, ALL_FILES - C_SOURCE_FILES +1 ) )
+							FileTypeList_ids, FileTypeList_count ) )
 	{
 		editor->saveToFile( saveDialog.getFilename() );
 		FileSpec fs = {
@@ -1669,14 +1669,14 @@ SuccessCode WinEditChild::handleClose()
 
 	if( isChanged() )
 	{
-		STRING	theMessage = application.loadString( CLOSE_ANYWAY );
+		STRING	theMessage = application.loadString( CLOSE_ANYWAY_id );
 		STRING	theFile = getFileName();
 		if( theMessage.size() + theFile.size() >= 1024 )
 		{
 			theFile = STRING("...") + theFile.rightString( 1016 - theMessage.strlen() );
 		}
 		theMessage.searchNreplace( "%s", !theFile.isEmpty() ? theFile : STRING("untitled") );
-		int button = messageBox( theMessage, WARNING, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
+		int button = messageBox( theMessage, WARNING_id, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
 
 		if( button == IDCANCEL )
 /*@*/		return scERROR;
@@ -2406,7 +2406,7 @@ void WinEditMain::openFile( const STRING &iFileName, EDIT::EditCharset charSet, 
 	}
 	else
 	{
-		editor->setTitle( UNTITLED );
+		editor->setTitle( UNTITLED_id );
 	}
 
 	editor->setCharset( charSet );

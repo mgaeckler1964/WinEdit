@@ -95,4 +95,44 @@
 </menu>
 </menu>
 </menus>
+<strings>
+<list name="STRINGLIST">
+<string name="NOREGISTER" caption="Unable to register window class" id="186" />
+<string name="NOWINDOW" caption="Unable to open window" id="187" />
+<string name="UNTITLED" caption="Untitled" id="188" />
+<string name="WARNING" caption="Warning" id="189" />
+<string name="CLOSE_ANYWAY" caption="File %s not saved. Save now?" id="190" />
+</list>
+<list name="FileTypeList">
+<string name="STYLE_SHEETS" caption="Cascading Styles(*.css)|*.css|" id="191" />
+<string name="C_SOURCE_FILES" caption="C(++)-Source(*.cpp;*.c)|*.cpp;*.c|" id="192" />
+<string name="CG_CONFIG" caption="Code Guard Config(*.cgi)|*.cgi|" id="193" />
+<string name="CG_LOG" caption="Code Guard Log(*.cgl)|*.cgl|" id="194" />
+<string name="CONFIG_FILES" caption="Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="195" />
+<string name="HEADER_FILES" caption="Headerfiles(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|" id="196" />
+<string name="HELP_PROJECTS" caption="Help Projects(*.hpj)|*.hpj|" id="197" />
+<string name="HTML_FILES" caption="HTML Files(*.html;*.htm)|*.html;*.htm|" id="198" />
+<string name="JAVA_SCRIPTS" caption="Java-Scripts(*.js)|*.js|" id="199" />
+<string name="JAVA_FILES" caption="Java-Source(*.java)|*.java|" id="200" />
+<string name="LIVELINK_FILES" caption="Livelink(*.out)|*.out|" id="201" />
+<string name="MAKE_FILES" caption="Makefiles(*.mak)|*.mak|" id="202" />
+<string name="DEF_FILES" caption="Module Definitionfiles(*.def)|*.def|" id="203" />
+<string name="BATCH_FILES" caption="MSDOS-Batch files(*.bat;*.cmd)|*.bat;*.cmd|" id="204" />
+<string name="OPL_FILES" caption="OpenUI Source(*.opl)|*.opl|" id="205" />
+<string name="PASCAL_FILES" caption="Pascal-Source(*.pas)|*.pas|" id="206" />
+<string name="PHP_FILES" caption="PHP-Source(*.php)|*.php|" id="207" />
+<string name="PROC_FILES" caption="Pro*C/C++ spource(*.pc)|*.pc|" id="208" />
+<string name="PROT_FILES" caption="Protocols(*.log)|*.log|" id="209" />
+<string name="REGISTRATION_FILES" caption="Registrations (*.reg)|*.reg|" id="210" />
+<string name="RESSOURCE_FILES" caption="Ressource(*.rc)|*.rc|" id="211" />
+<string name="SQL_SCRIPTS" caption="SQL Scripts(*.sql)|*.sql|" id="212" />
+<string name="SYMBOL_TABLES" caption="Symbol Tables(*.map)|*.map|" id="213" />
+<string name="TEXT_FILES" caption="Text files(*.txt)|*.txt|" id="214" />
+<string name="XML_FILES" caption="XML files(*.xml)|*.xml|" id="215" />
+<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="216" />
+<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="217" />
+<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="218" />
+<string name="ALL_FILES" caption="All files|*.*|" id="219" />
+</list>
+</strings>
 </gui>

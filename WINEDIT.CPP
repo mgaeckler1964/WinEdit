@@ -1671,11 +1671,11 @@ SuccessCode WinEditChild::handleClose()
 	{
 		STRING	theMessage = application.loadString( CLOSE_ANYWAY_id );
 		STRING	theFile = getFileName();
-		if( theMessage.size() + theFile.size() >= 1024 )
+		if( theMessage.size() + theFile.size() > 1024 )
 		{
-			theFile = STRING("...") + theFile.rightString( 1016 - theMessage.strlen() );
+			theFile = STRING("...") + theFile.rightString( 1021 - theMessage.strlen() );
 		}
-		theMessage.searchNreplace( "%s", !theFile.isEmpty() ? theFile : STRING("untitled") );
+		theMessage.searchNreplace( "%s", !theFile.isEmpty() ? theFile : application.loadString( UNTITLED_id ) );
 		int button = messageBox( theMessage, WARNING_id, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
 
 		if( button == IDCANCEL )

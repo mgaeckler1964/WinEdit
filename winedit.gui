@@ -108,31 +108,32 @@
 <string name="STYLE_SHEETS" caption="Cascading Styles(*.css)|*.css|" id="192" />
 <string name="CG_CONFIG" caption="Code Guard Config(*.cgi)|*.cgi|" id="193" />
 <string name="CG_LOG" caption="Code Guard Log(*.cgl)|*.cgl|" id="194" />
-<string name="CONFIG_FILES" caption="Configurationfiles(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="195" />
-<string name="HEADER_FILES" caption="Headerfiles(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|" id="196" />
-<string name="HELP_PROJECTS" caption="Help Projects(*.hpj)|*.hpj|" id="197" />
-<string name="HTML_FILES" caption="HTML Files(*.html;*.htm)|*.html;*.htm|" id="198" />
-<string name="JAVA_SCRIPTS" caption="Java-Scripts(*.js)|*.js|" id="199" />
-<string name="JAVA_FILES" caption="Java-Source(*.java)|*.java|" id="200" />
-<string name="LIVELINK_FILES" caption="Livelink(*.out)|*.out|" id="201" />
-<string name="MAKE_FILES" caption="Makefiles(*.mak)|*.mak|" id="202" />
-<string name="DEF_FILES" caption="Module Definitionfiles(*.def)|*.def|" id="203" />
-<string name="BATCH_FILES" caption="MSDOS-Batch files(*.bat;*.cmd)|*.bat;*.cmd|" id="204" />
-<string name="OPL_FILES" caption="OpenUI Source(*.opl)|*.opl|" id="205" />
-<string name="PASCAL_FILES" caption="Pascal-Source(*.pas)|*.pas|" id="206" />
-<string name="PHP_FILES" caption="PHP-Source(*.php)|*.php|" id="207" />
-<string name="PROC_FILES" caption="Pro*C/C++ spource(*.pc)|*.pc|" id="208" />
-<string name="PROT_FILES" caption="Protocols(*.log)|*.log|" id="209" />
-<string name="REGISTRATION_FILES" caption="Registrations (*.reg)|*.reg|" id="210" />
-<string name="RESSOURCE_FILES" caption="Ressource(*.rc)|*.rc|" id="211" />
-<string name="SQL_SCRIPTS" caption="SQL Scripts(*.sql)|*.sql|" id="212" />
-<string name="SYMBOL_TABLES" caption="Symbol Tables(*.map)|*.map|" id="213" />
-<string name="TEXT_FILES" caption="Text files(*.txt)|*.txt|" id="214" />
-<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="215" />
-<string name="XML_FILES" caption="XML files(*.xml)|*.xml|" id="216" />
-<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="217" />
-<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="218" />
-<string name="ALL_FILES" caption="All files|*.*|" id="219" />
+<string name="CONFIG_FILES" caption="Configuration Files(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="195" />
+<string name="GITHUB_FILES" caption="Github Textfiles(*.md)|*.md|" id="196" />
+<string name="HEADER_FILES" caption="Header Files(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|" id="197" />
+<string name="HELP_PROJECTS" caption="Help Projects(*.hpj)|*.hpj|" id="198" />
+<string name="HTML_FILES" caption="HTML Files(*.html;*.htm)|*.html;*.htm|" id="199" />
+<string name="JAVA_SCRIPTS" caption="Javascript(*.js)|*.js|" id="200" />
+<string name="JAVA_FILES" caption="Java Source(*.java)|*.java|" id="201" />
+<string name="LIVELINK_FILES" caption="Livelink(*.out)|*.out|" id="202" />
+<string name="MAKE_FILES" caption="Makefiles(*.mak)|*.mak|" id="203" />
+<string name="DEF_FILES" caption="Module Definition Files(*.def)|*.def|" id="204" />
+<string name="BATCH_FILES" caption="MS-DOS Batchfiles(*.bat;*.cmd)|*.bat;*.cmd|" id="205" />
+<string name="OPL_FILES" caption="OpenUI Source(*.opl)|*.opl|" id="206" />
+<string name="PASCAL_FILES" caption="Pascal Source(*.pas)|*.pas|" id="207" />
+<string name="PHP_FILES" caption="PHP Source(*.php)|*.php|" id="208" />
+<string name="PROC_FILES" caption="Pro*C/C++ Source(*.pc)|*.pc|" id="209" />
+<string name="PROT_FILES" caption="Protocols(*.log)|*.log|" id="210" />
+<string name="REGISTRATION_FILES" caption="Registration Files (*.reg)|*.reg|" id="211" />
+<string name="RESSOURCE_FILES" caption="Resource Files(*.rc)|*.rc|" id="212" />
+<string name="SQL_SCRIPTS" caption="SQL Scripts(*.sql)|*.sql|" id="213" />
+<string name="SYMBOL_TABLES" caption="Symbol Tables(*.map)|*.map|" id="214" />
+<string name="TEXT_FILES" caption="Text Files(*.txt)|*.txt|" id="215" />
+<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="216" />
+<string name="XML_FILES" caption="XML Files(*.xml)|*.xml|" id="217" />
+<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="218" />
+<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="219" />
+<string name="ALL_FILES" caption="All Files|*.*|" id="220" />
 </list>
 </strings>
 </gui>

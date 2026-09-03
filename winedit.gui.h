@@ -20,11 +20,11 @@ namespace winlibGUI {
 
 	const int AboutDlg_id=129;
 	const int AboutLABEL_id=178;
-	const int ALL_FILES_id=219;
+	const int ALL_FILES_id=220;
 	const int autoIndent_id=173;
 	const int autoReload_id=175;
 	const int backup_id=174;
-	const int BATCH_FILES_id=204;
+	const int BATCH_FILES_id=205;
 	const int blockBtn_id=183;
 	const int centerBtn_id=184;
 	const int CG_CONFIG_id=193;
@@ -34,8 +34,8 @@ namespace winlibGUI {
 	const int CONFIG_FILES_id=195;
 	const int CPUWidthLABEL_id=179;
 	const int C_SOURCE_FILES_id=191;
-	const int DEF_FILES_id=203;
-	const int DTD_FILES_id=215;
+	const int DEF_FILES_id=204;
+	const int DTD_FILES_id=216;
 	const int EDIT_CLEAR_id=144;
 	const int EDIT_COPY_id=142;
 	const int EDIT_CS_ANSI_id=151;
@@ -68,38 +68,39 @@ namespace winlibGUI {
 	const int FILE_SAVE_ALL_id=135;
 	const int FILE_SAVE_AS_id=134;
 	const int FormatBlockDlg_id=130;
-	const int HEADER_FILES_id=196;
-	const int HELP_PROJECTS_id=197;
-	const int HTML_FILES_id=198;
+	const int GITHUB_FILES_id=196;
+	const int HEADER_FILES_id=197;
+	const int HELP_PROJECTS_id=198;
+	const int HTML_FILES_id=199;
 	const int INFO_ABOUT_id=171;
-	const int JAVA_FILES_id=200;
-	const int JAVA_SCRIPTS_id=199;
+	const int JAVA_FILES_id=201;
+	const int JAVA_SCRIPTS_id=200;
 	const int leftBtn_id=182;
 	const int linewidth_id=181;
-	const int LIVELINK_FILES_id=201;
+	const int LIVELINK_FILES_id=202;
 	const int lwLABEL_id=180;
-	const int MAKE_FILES_id=202;
+	const int MAKE_FILES_id=203;
 	const int MENU_id=172;
 	const int NOREGISTER_id=186;
 	const int NOWINDOW_id=187;
-	const int OPL_FILES_id=205;
-	const int PASCAL_FILES_id=206;
-	const int PHP_FILES_id=207;
+	const int OPL_FILES_id=206;
+	const int PASCAL_FILES_id=207;
+	const int PHP_FILES_id=208;
 	const int PreferencesDlg_id=128;
-	const int PROC_FILES_id=208;
-	const int PROT_FILES_id=209;
-	const int REGISTRATION_FILES_id=210;
-	const int RESSOURCE_FILES_id=211;
+	const int PROC_FILES_id=209;
+	const int PROT_FILES_id=210;
+	const int REGISTRATION_FILES_id=211;
+	const int RESSOURCE_FILES_id=212;
 	const int rightBtn_id=185;
 	const int SEARCH_NEXT_id=164;
 	const int SEARCH_REPLACE_id=163;
 	const int SEARCH_SEARCH_id=162;
-	const int SQL_SCRIPTS_id=212;
+	const int SQL_SCRIPTS_id=213;
 	const int stripLineEnds_id=176;
 	const int STYLE_SHEETS_id=192;
-	const int SYMBOL_TABLES_id=213;
+	const int SYMBOL_TABLES_id=214;
 	const int tabwidth_id=177;
-	const int TEXT_FILES_id=214;
+	const int TEXT_FILES_id=215;
 	const int UNTITLED_id=188;
 	const int WARNING_id=189;
 	const int WIN_ARRANGE_id=169;
@@ -107,9 +108,9 @@ namespace winlibGUI {
 	const int WIN_CLOSE_ALL_id=170;
 	const int WIN_TILE_HORIZ_id=166;
 	const int WIN_TILE_VERT_id=167;
-	const int XML_FILES_id=216;
-	const int XSD_FILES_id=217;
-	const int XSL_FILES_id=218;
+	const int XML_FILES_id=217;
+	const int XSD_FILES_id=218;
+	const int XSL_FILES_id=219;
 
 	class GuiApplication : public winlib::Application {
 		public:
@@ -170,7 +171,7 @@ namespace winlibGUI {
 	extern const int STRINGLIST_ids[];
 	static const int STRINGLIST_count = 5;
 	extern const int FileTypeList_ids[];
-	static const int FileTypeList_count = 29;
+	static const int FileTypeList_count = 30;
 }	// namespace winlibGUI
 
 #endif // C__CRESD_SOURCE_WINEDIT_WINEDIT_GUI_H

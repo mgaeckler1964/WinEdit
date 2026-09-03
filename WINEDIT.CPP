@@ -1354,12 +1354,12 @@ void WinEditMain::lineBreak()
 		if( editor->isLineBreak() )
 		{
 			editor->clrLineBreak();
-			getMenu()->uncheckMenuItem( EDIT_BREAK );
+			getMenu()->uncheckMenuItem( EDIT_BREAK_id );
 		}
 		else
 		{
 			editor->setLineBreak();
-			getMenu()->checkMenuItem( EDIT_BREAK );
+			getMenu()->checkMenuItem( EDIT_BREAK_id );
 		}
 	}
 }
@@ -1635,9 +1635,9 @@ void WinEditChild::handleFocus()
 		mainWindow->getMenu()->uncheckMenuItem( EDIT_CS_UTF8_BOM_id );
 	}
 	if( isLineBreak() )
-		mainWindow->getMenu()->checkMenuItem( EDIT_BREAK );
+		mainWindow->getMenu()->checkMenuItem( EDIT_BREAK_id );
 	else
-		mainWindow->getMenu()->uncheckMenuItem( EDIT_BREAK );
+		mainWindow->getMenu()->uncheckMenuItem( EDIT_BREAK_id );
 	if( !isEditable() )
 		mainWindow->getMenu()->checkMenuItem( EDIT_READ_ONLY_id );
 	else
@@ -1757,7 +1757,7 @@ ProcessStatus WinEditMain::handleCommand( int command )
 		indent();							break;
 	case EDIT_UNINDENT_id:
 		unindent();							break;
-	case EDIT_BREAK:
+	case EDIT_BREAK_id:
 		lineBreak();						break;
 	case EDIT_OEM_CONVERT_id:
 		changeCharset( EDIT::csOEM );		break;

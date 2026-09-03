@@ -32,6 +32,3 @@
 #define EDIT_ICON			101
 #define EDIT_ICON_DLG		102
 #define WINDOW_MENU			3		/// TODO auto generate with GUI Builder if possible
-#define EDIT_BREAK			666		// this is a marker for an old menu entry
-									// I want to re-enable this old menu entry
-									// in future

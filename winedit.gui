@@ -2,34 +2,34 @@
 <gui>
 <forms>
 <form name="PreferencesDlg" style="281542656" width="265" height="145" baseClass="ModalPopup" id="128" caption="Preferences">
-<child type="CheckBox" name="autoIndent" caption="Auto &amp;Indent" x="8" y="8" width="80" height="24" style="1342242819" id="173" />
-<child type="CheckBox" name="backup" caption="Create &amp;Backup" x="8" y="32" width="104" height="24" style="1342242819" id="174" />
-<child type="CheckBox" name="autoReload" caption="Auto &amp;Reload" x="8" y="56" width="80" height="24" style="1342242819" id="175" />
-<child type="CheckBox" name="stripLineEnds" caption="StripLineEnds" x="8" y="80" width="80" height="24" style="1342242819" id="176" />
+<child type="CheckBox" name="autoIndent" caption="Auto &amp;Indent" x="8" y="8" width="80" height="24" style="1342242819" id="174" />
+<child type="CheckBox" name="backup" caption="Create &amp;Backup" x="8" y="32" width="104" height="24" style="1342242819" id="175" />
+<child type="CheckBox" name="autoReload" caption="Auto &amp;Reload" x="8" y="56" width="80" height="24" style="1342242819" id="176" />
+<child type="CheckBox" name="stripLineEnds" caption="StripLineEnds" x="8" y="80" width="80" height="24" style="1342242819" id="177" />
 <child type="Label" name="" caption="Tab &amp;Width" x="112" y="8" width="80" height="24" style="1342242827" />
-<child type="EditControl" name="tabwidth" caption="" x="176" y="8" width="80" height="24" style="1350631808" id="177" />
+<child type="EditControl" name="tabwidth" caption="" x="176" y="8" width="80" height="24" style="1350631808" id="178" />
 <child type="PushButton" name="IDOK" caption="&amp;OK" x="8" y="112" width="80" height="24" style="1342242817" id="1" />
 <child type="PushButton" name="IDCANCEL" caption="&amp;Cancel" x="96" y="112" width="80" height="24" style="1342242816" id="2" />
 </form>
 <form name="AboutDlg" style="281542656" width="288" height="207" id="129" baseClass="ModalPopup" caption="About  WinEdit">
-<child type="Label" name="AboutLABEL" caption="Label" x="8" y="8" width="164" height="161" style="1342242816" id="178" />
-<child type="Label" name="CPUWidthLABEL" caption="Label" x="176" y="8" width="80" height="25" style="1342242827" id="179" />
+<child type="Label" name="AboutLABEL" caption="Label" x="8" y="8" width="164" height="161" style="1342242816" id="179" />
+<child type="Label" name="CPUWidthLABEL" caption="Label" x="176" y="8" width="80" height="25" style="1342242827" id="180" />
 <child type="PushButton" name="IDOK" caption="&amp;OK" x="8" y="176" width="80" height="25" style="1342242817" id="1" />
 <child type="Label" name="" caption="#102" x="176" y="32" width="32" height="32" style="1342242819" />
 </form>
 <form name="FormatBlockDlg" style="281018368" width="251" height="128" id="130" baseClass="ModalPopup">
-<child type="Label" name="lwLABEL" caption="Line &amp;Width" x="8" y="8" width="0" height="0" style="1342373899" id="180" />
-<child type="EditControl" name="linewidth" caption="" x="80" y="8" width="80" height="24" style="1350631808" id="181" />
-<child type="RadioButton" name="leftBtn" caption="&amp;Left" x="8" y="48" width="60" height="24" style="1342242825" id="182" />
-<child type="RadioButton" name="blockBtn" caption="&amp;Block" x="64" y="48" width="64" height="24" style="1342242825" id="183" />
-<child type="RadioButton" name="centerBtn" caption="&amp;Center" x="128" y="48" width="64" height="24" style="1342242825" id="184" />
-<child type="RadioButton" name="rightBtn" caption="&amp;Right" x="192" y="48" width="80" height="24" style="1342242825" id="185" />
+<child type="Label" name="lwLABEL" caption="Line &amp;Width" x="8" y="8" width="0" height="0" style="1342373899" id="181" />
+<child type="EditControl" name="linewidth" caption="" x="80" y="8" width="80" height="24" style="1350631808" id="182" />
+<child type="RadioButton" name="leftBtn" caption="&amp;Left" x="8" y="48" width="60" height="24" style="1342242825" id="183" />
+<child type="RadioButton" name="blockBtn" caption="&amp;Block" x="64" y="48" width="64" height="24" style="1342242825" id="184" />
+<child type="RadioButton" name="centerBtn" caption="&amp;Center" x="128" y="48" width="64" height="24" style="1342242825" id="185" />
+<child type="RadioButton" name="rightBtn" caption="&amp;Right" x="192" y="48" width="80" height="24" style="1342242825" id="186" />
 <child type="PushButton" name="IDOK" caption="&amp;OK" x="8" y="88" width="80" height="24" style="1342242817" id="1" />
 <child type="PushButton" name="IDCANCEL" caption="C&amp;ancel" x="96" y="88" width="80" height="24" style="1342242816" id="2" />
 </form>
 </forms>
 <menus>
-<menu name="MENU" id="172">
+<menu name="MENU" id="173">
 <menu caption="&amp;File" name="">
 <menu caption="&amp;New" name="FILE_NEW" id="131" />
 <menu caption="&amp;Open..." name="FILE_OPEN" id="132" />
@@ -66,74 +66,75 @@
 <menu caption="OE&amp;M (Dos)" name="EDIT_OEM_CONVERT" id="154" />
 <menu caption="-" />
 <menu caption="&amp;HTML-Entities" name="EDIT_HTML_ENTITIES" id="155" />
+<menu caption="&amp;Word Wrap" name="EDIT_BREAK" id="156" />
 <menu caption="-" />
-<menu caption="&amp;Indent" name="EDIT_INDENT" id="156" />
-<menu caption="U&amp;nindent" name="EDIT_UNINDENT" id="157" />
-<menu caption="&amp;Tab Indent" name="EDIT_TAB_INDENT" id="158" />
-<menu caption="&amp;Space Indent" name="EDIT_SPACE_INDENT" id="159" />
-<menu caption="&amp;Format..." name="EDIT_FORMAT" id="160" />
+<menu caption="&amp;Indent" name="EDIT_INDENT" id="157" />
+<menu caption="U&amp;nindent" name="EDIT_UNINDENT" id="158" />
+<menu caption="&amp;Tab Indent" name="EDIT_TAB_INDENT" id="159" />
+<menu caption="&amp;Space Indent" name="EDIT_SPACE_INDENT" id="160" />
+<menu caption="&amp;Format..." name="EDIT_FORMAT" id="161" />
 <menu caption="-" />
-<menu caption="&amp;Read-Only" name="EDIT_READ_ONLY" id="161" />
+<menu caption="&amp;Read-Only" name="EDIT_READ_ONLY" id="162" />
 </menu>
 <menu caption="&amp;Search">
-<menu caption="&amp;Search..." name="SEARCH_SEARCH" id="162" />
-<menu caption="&amp;Replace..." name="SEARCH_REPLACE" id="163" />
-<menu caption="&amp;Next" name="SEARCH_NEXT" id="164" />
+<menu caption="&amp;Search..." name="SEARCH_SEARCH" id="163" />
+<menu caption="&amp;Replace..." name="SEARCH_REPLACE" id="164" />
+<menu caption="&amp;Next" name="SEARCH_NEXT" id="165" />
 <menu caption="-" />
-<menu caption="Compare" name="COMPARE_FILES" id="165" />
+<menu caption="Compare" name="COMPARE_FILES" id="166" />
 </menu>
 <menu caption="&amp;Window">
-<menu caption="Tile &amp;horizontal" name="WIN_TILE_HORIZ" id="166" />
-<menu caption="Tile &amp;vertical" name="WIN_TILE_VERT" id="167" />
-<menu caption="&amp;Cascade" name="WIN_CASCADE" id="168" />
-<menu caption="&amp;Arange icons" name="WIN_ARRANGE" id="169" />
+<menu caption="Tile &amp;horizontal" name="WIN_TILE_HORIZ" id="167" />
+<menu caption="Tile &amp;vertical" name="WIN_TILE_VERT" id="168" />
+<menu caption="&amp;Cascade" name="WIN_CASCADE" id="169" />
+<menu caption="&amp;Arange icons" name="WIN_ARRANGE" id="170" />
 <menu caption="-" />
-<menu caption="Close A&amp;ll" name="WIN_CLOSE_ALL" id="170" />
+<menu caption="Close A&amp;ll" name="WIN_CLOSE_ALL" id="171" />
 </menu>
 <menu caption="&amp;Info">
-<menu caption="&amp;About Editor..." name="INFO_ABOUT" id="171" />
+<menu caption="&amp;About Editor..." name="INFO_ABOUT" id="172" />
 </menu>
 </menu>
 </menus>
 <strings>
 <list name="STRINGLIST">
-<string name="NOREGISTER" caption="Unable to register window class" id="186" />
-<string name="NOWINDOW" caption="Unable to open window" id="187" />
-<string name="UNTITLED" caption="Untitled" id="188" />
-<string name="WARNING" caption="Warning" id="189" />
-<string name="CLOSE_ANYWAY" caption="File %s not saved. Save now?" id="190" />
+<string name="NOREGISTER" caption="Unable to register window class" id="187" />
+<string name="NOWINDOW" caption="Unable to open window" id="188" />
+<string name="UNTITLED" caption="Untitled" id="189" />
+<string name="WARNING" caption="Warning" id="190" />
+<string name="CLOSE_ANYWAY" caption="File %s not saved. Save now?" id="191" />
 </list>
 <list name="FileTypeList">
-<string name="C_SOURCE_FILES" caption="C(++)-Source(*.cpp;*.c)|*.cpp;*.c|" id="191" />
-<string name="STYLE_SHEETS" caption="Cascading Styles(*.css)|*.css|" id="192" />
-<string name="CG_CONFIG" caption="Code Guard Config(*.cgi)|*.cgi|" id="193" />
-<string name="CG_LOG" caption="Code Guard Log(*.cgl)|*.cgl|" id="194" />
-<string name="CONFIG_FILES" caption="Configuration Files(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="195" />
-<string name="GITHUB_FILES" caption="Github Textfiles(*.md)|*.md|" id="196" />
-<string name="HEADER_FILES" caption="Header Files(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|" id="197" />
-<string name="HELP_PROJECTS" caption="Help Projects(*.hpj)|*.hpj|" id="198" />
-<string name="HTML_FILES" caption="HTML Files(*.html;*.htm)|*.html;*.htm|" id="199" />
-<string name="JAVA_SCRIPTS" caption="Javascript(*.js)|*.js|" id="200" />
-<string name="JAVA_FILES" caption="Java Source(*.java)|*.java|" id="201" />
-<string name="LIVELINK_FILES" caption="Livelink(*.out)|*.out|" id="202" />
-<string name="MAKE_FILES" caption="Makefiles(*.mak)|*.mak|" id="203" />
-<string name="DEF_FILES" caption="Module Definition Files(*.def)|*.def|" id="204" />
-<string name="BATCH_FILES" caption="MS-DOS Batchfiles(*.bat;*.cmd)|*.bat;*.cmd|" id="205" />
-<string name="OPL_FILES" caption="OpenUI Source(*.opl)|*.opl|" id="206" />
-<string name="PASCAL_FILES" caption="Pascal Source(*.pas)|*.pas|" id="207" />
-<string name="PHP_FILES" caption="PHP Source(*.php)|*.php|" id="208" />
-<string name="PROC_FILES" caption="Pro*C/C++ Source(*.pc)|*.pc|" id="209" />
-<string name="PROT_FILES" caption="Protocols(*.log)|*.log|" id="210" />
-<string name="REGISTRATION_FILES" caption="Registration Files (*.reg)|*.reg|" id="211" />
-<string name="RESSOURCE_FILES" caption="Resource Files(*.rc)|*.rc|" id="212" />
-<string name="SQL_SCRIPTS" caption="SQL Scripts(*.sql)|*.sql|" id="213" />
-<string name="SYMBOL_TABLES" caption="Symbol Tables(*.map)|*.map|" id="214" />
-<string name="TEXT_FILES" caption="Text Files(*.txt)|*.txt|" id="215" />
-<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="216" />
-<string name="XML_FILES" caption="XML Files(*.xml)|*.xml|" id="217" />
-<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="218" />
-<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="219" />
-<string name="ALL_FILES" caption="All Files|*.*|" id="220" />
+<string name="C_SOURCE_FILES" caption="C(++)-Source(*.cpp;*.c)|*.cpp;*.c|" id="192" />
+<string name="STYLE_SHEETS" caption="Cascading Styles(*.css)|*.css|" id="193" />
+<string name="CG_CONFIG" caption="Code Guard Config(*.cgi)|*.cgi|" id="194" />
+<string name="CG_LOG" caption="Code Guard Log(*.cgl)|*.cgl|" id="195" />
+<string name="CONFIG_FILES" caption="Configuration Files(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="196" />
+<string name="GITHUB_FILES" caption="Github Textfiles(*.md)|*.md|" id="197" />
+<string name="HEADER_FILES" caption="Header Files(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|" id="198" />
+<string name="HELP_PROJECTS" caption="Help Projects(*.hpj)|*.hpj|" id="199" />
+<string name="HTML_FILES" caption="HTML Files(*.html;*.htm)|*.html;*.htm|" id="200" />
+<string name="JAVA_SCRIPTS" caption="Javascript(*.js)|*.js|" id="201" />
+<string name="JAVA_FILES" caption="Java Source(*.java)|*.java|" id="202" />
+<string name="LIVELINK_FILES" caption="Livelink(*.out)|*.out|" id="203" />
+<string name="MAKE_FILES" caption="Makefiles(*.mak)|*.mak|" id="204" />
+<string name="DEF_FILES" caption="Module Definition Files(*.def)|*.def|" id="205" />
+<string name="BATCH_FILES" caption="MS-DOS Batchfiles(*.bat;*.cmd)|*.bat;*.cmd|" id="206" />
+<string name="OPL_FILES" caption="OpenUI Source(*.opl)|*.opl|" id="207" />
+<string name="PASCAL_FILES" caption="Pascal Source(*.pas)|*.pas|" id="208" />
+<string name="PHP_FILES" caption="PHP Source(*.php)|*.php|" id="209" />
+<string name="PROC_FILES" caption="Pro*C/C++ Source(*.pc)|*.pc|" id="210" />
+<string name="PROT_FILES" caption="Protocols(*.log)|*.log|" id="211" />
+<string name="REGISTRATION_FILES" caption="Registration Files (*.reg)|*.reg|" id="212" />
+<string name="RESSOURCE_FILES" caption="Resource Files(*.rc)|*.rc|" id="213" />
+<string name="SQL_SCRIPTS" caption="SQL Scripts(*.sql)|*.sql|" id="214" />
+<string name="SYMBOL_TABLES" caption="Symbol Tables(*.map)|*.map|" id="215" />
+<string name="TEXT_FILES" caption="Text Files(*.txt)|*.txt|" id="216" />
+<string name="DTD_FILES" caption="XML Document Type Definitions(*.dtd)|*.dtd|" id="217" />
+<string name="XML_FILES" caption="XML Files(*.xml)|*.xml|" id="218" />
+<string name="XSD_FILES" caption="XML Schema(*.xsd)|*.xsd|" id="219" />
+<string name="XSL_FILES" caption="XSL Stylesheets(*.xsl)|*.xsl|" id="220" />
+<string name="ALL_FILES" caption="All Files|*.*|" id="221" />
 </list>
 </strings>
 </gui>

@@ -124,7 +124,7 @@ namespace winlibGUI {
 "<string name=\"CG_CONFIG\" caption=\"Code Guard Config(*.cgi)|*.cgi|\" id=\"194\" />\n"
 "<string name=\"CG_LOG\" caption=\"Code Guard Log(*.cgl)|*.cgl|\" id=\"195\" />\n"
 "<string name=\"CONFIG_FILES\" caption=\"Configuration Files(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|\" id=\"196\" />\n"
-"<string name=\"GITHUB_FILES\" caption=\"Github Textfiles(*.md)|*.md|\" id=\"197\" />\n"
+"<string name=\"GITHUB_FILES\" caption=\"GitHub Textfiles(*.md)|*.md|\" id=\"197\" />\n"
 "<string name=\"HEADER_FILES\" caption=\"Header Files(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|\" id=\"198\" />\n"
 "<string name=\"HELP_PROJECTS\" caption=\"Help Projects(*.hpj)|*.hpj|\" id=\"199\" />\n"
 "<string name=\"HTML_FILES\" caption=\"HTML Files(*.html;*.htm)|*.html;*.htm|\" id=\"200\" />\n"

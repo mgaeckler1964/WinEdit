@@ -110,7 +110,7 @@
 <string name="CG_CONFIG" caption="Code Guard Config(*.cgi)|*.cgi|" id="194" />
 <string name="CG_LOG" caption="Code Guard Log(*.cgl)|*.cgl|" id="195" />
 <string name="CONFIG_FILES" caption="Configuration Files(*.ini;*.cfg;*.inf)|*.ini;*.cfg;*.inf|" id="196" />
-<string name="GITHUB_FILES" caption="Github Textfiles(*.md)|*.md|" id="197" />
+<string name="GITHUB_FILES" caption="GitHub Textfiles(*.md)|*.md|" id="197" />
 <string name="HEADER_FILES" caption="Header Files(*.hpp;*.h;*.rh)|*.hpp;*.h;*.rh|" id="198" />
 <string name="HELP_PROJECTS" caption="Help Projects(*.hpj)|*.hpj|" id="199" />
 <string name="HTML_FILES" caption="HTML Files(*.html;*.htm)|*.html;*.htm|" id="200" />

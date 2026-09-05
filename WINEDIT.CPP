@@ -128,14 +128,14 @@ class PreferencesDlg : public PreferencesDlg_form
 {
 	public:
 	PreferencesDlg() : PreferencesDlg_form(nullptr) {}
-	virtual ProcessStatus handleCreate();
-	virtual ProcessStatus handleOk();
+	ProcessStatus handleCreate() override;
+	ProcessStatus handleOk() override;
 };
 
 class AboutDlg : public AboutDlg_form
 {
 	private:
-	virtual ProcessStatus handleCreate();
+	ProcessStatus handleCreate() override;
 
 	public:
 	AboutDlg() : AboutDlg_form(nullptr) {}
@@ -143,8 +143,8 @@ class AboutDlg : public AboutDlg_form
 
 class WinEditChild : public EditChild
 {
-	virtual void handleFocus();
-	virtual SuccessCode handleClose();
+	void handleFocus() override;
+	SuccessCode handleClose() override;
 
 	public:
 	enum BlockFormat
@@ -163,8 +163,8 @@ class FormatBlockDlg : public FormatBlockDlg_form
 	unsigned					m_lineLen;
 	WinEditChild::BlockFormat	m_format;
 
-	virtual ProcessStatus handleCreate();
-	virtual ProcessStatus handleOk();
+	ProcessStatus handleCreate() override;
+	ProcessStatus handleOk() override;
 
 	public:
 	FormatBlockDlg() : FormatBlockDlg_form(nullptr) {}
@@ -242,8 +242,8 @@ class WinEditMain : public MDIwindow
 	void formatBlock();
 	void convertIndent( int comand );
 
-	virtual void handleFind( const char *, bool, bool, bool );
-	virtual void handleReplace( const char *, const char *, bool, bool, bool );
+	void handleFind( const char *, bool, bool, bool ) override;
+	void handleReplace( const char *, const char *, bool, bool, bool ) override;
 	void searchText();
 	void replaceText();
 	void searchNext();
@@ -259,15 +259,15 @@ class WinEditMain : public MDIwindow
 	void removeMenuFileEntry( size_t id );
 	void addMenuFile( const FileSpec &fs );
 
-	virtual SuccessCode handleClose();
-	virtual ProcessStatus handleCommand( int command );
-	virtual void handleFile( const char *, size_t, size_t );
-	virtual void handleFocus();
-	virtual void handleTimer();
-	virtual	ProcessStatus handleData(const ForeignWindow &src, gak::uint64 dataType, const void *data, size_t size);
+	SuccessCode handleClose() override;
+	ProcessStatus handleCommand( int command ) override;
+	void handleFile( const char *, size_t, size_t ) override;
+	void handleFocus() override;
+	void handleTimer() override;
+	ProcessStatus handleData(const ForeignWindow &src, gak::uint64 dataType, const void *data, size_t size) override;
 
-	virtual ProcessStatus ddeInitiate( const char *app, const char *topic );
-	virtual ProcessStatus ddeExecute( const char *command );
+	ProcessStatus ddeInitiate( const char *app, const char *topic ) override;
+	ProcessStatus ddeExecute( const char *command ) override;
 
 
 	public:
@@ -282,9 +282,9 @@ class WinEditMain : public MDIwindow
 
 class WinEdit : public GuiApplication
 {
-	virtual bool 			startApplication( HINSTANCE hInstance, const char *cmdLine );
-	virtual CallbackWindow	*createMainWindow( const char *cmdLine, int nCmdShow );
-	virtual void deleteMainWindow( BasicWindow  *mainWindow );
+	bool 			startApplication( HINSTANCE hInstance, const char *cmdLine ) override;
+	CallbackWindow	*createMainWindow( const char *cmdLine, int nCmdShow ) override;
+	void deleteMainWindow( BasicWindow  *mainWindow ) override;
 
 	public:
 	WinEdit() : GuiApplication( EDIT_ICON ) {}

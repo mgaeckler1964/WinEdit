@@ -55,10 +55,10 @@
 #include <winlib/WINLIB.H>
 #include <winlib/winapp.h>
 #include <winlib/mdiwin.h>
-#include <winlib/editchld.h>
-#include <winlib/dialogwi.h>
-#include <winlib/stddlg.h>
-#include <winlib/f_type.h>
+#include <winlib/EditChild.h>
+#include <winlib/DialogWindow.h>
+#include <winlib/StandardDialogs.h>
+#include <winlib/FileTypeRegistry.h>
 #include <winlib/colors.h>
 #include <winlib/version.h>
 

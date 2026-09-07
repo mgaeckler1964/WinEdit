@@ -39,32 +39,13 @@
 // ----- includes ------------------------------------------------------ //
 // --------------------------------------------------------------------- //
 
-#include <memory>
-
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-
-#include <io.h>
-
-#include <gak/xml.h>
-#include <gak/directory.h>
-#include <gak/ensemble.h>
-
-#include <winlib/Atom.h>
-#include <winlib/WINLIB.H>
-#include <winlib/winapp.h>
-#include <winlib/mdiwin.h>
-#include <winlib/DialogWindow.h>
-#include <winlib/StandardDialogs.h>
-#include <winlib/FileTypeRegistry.h>
-#include <winlib/colors.h>
-#include <winlib/version.h>
-
-#include "Dialogs.h"
 #include "winedit.h"
-#include "winedit.gui.h"
+
+#include <winlib/FileTypeRegistry.h>
+
 #include "WinEditMain.h"
+
+#include "winedit.gui.h"
 
 // --------------------------------------------------------------------- //
 // ----- module switches ----------------------------------------------- //

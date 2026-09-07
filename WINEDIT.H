@@ -1,7 +1,7 @@
 /*
 		Project:		WINEDIT (Windows MDI-Editor)
 		Module: 		WINEDIT.H
-		Description:	The IDs for the ressource objects
+		Description:	An MDI text editor based on the windows edit control
 		Author:			Martin Gäckler
 		Address:		Hofmannsthalweg 14, A-4030 Linz
 		Web:			https://www.gaeckler.at/
@@ -28,6 +28,36 @@
 		OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 		SUCH DAMAGE.
 */
+
+// --------------------------------------------------------------------- //
+// ----- constants ----------------------------------------------------- //
+// --------------------------------------------------------------------- //
+
+namespace myProfile
+{
+	extern const char autoIndent[];
+	extern const char autoReload[];
+	extern const char backup[];
+	extern const char charset[];
+	extern const char directory[];
+	extern const char filterIndex[];
+	extern const char Font[];
+	extern const char FontSize[];
+	extern const char lastCharset[];
+	extern const char lastFile[];
+	extern const char filename[];
+	extern const char openFile[];
+	extern const char OpenFiles[];
+	extern const char selEnd[];
+	extern const char selStart[];
+	extern const char stripLineEnds[];
+	extern const char Style[];
+	extern const char tabWidth[];
+	extern const char lineWidth[];
+	extern const char blockFormat[];
+};
+
+extern const char APP_NAME[];
 
 #define EDIT_ICON			101
 #define EDIT_ICON_DLG		102

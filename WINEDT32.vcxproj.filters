@@ -21,6 +21,15 @@
     <ClCompile Include="winedit.gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Dialogs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinEditChild.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinEditMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="WinEdit.ico">
@@ -32,6 +41,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="winedit.gui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Dialogs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinEditChild.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WinEditMain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

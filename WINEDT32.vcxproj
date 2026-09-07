@@ -104,15 +104,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Dialogs.cpp" />
     <ClCompile Include="WINEDIT.CPP" />
     <ClCompile Include="winedit.gui.cpp" />
+    <ClCompile Include="WinEditChild.cpp" />
+    <ClCompile Include="WinEditMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="WinEdit.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Dialogs.h" />
     <ClInclude Include="winedit.gui.h" />
     <ClInclude Include="WINEDIT.H" />
+    <ClInclude Include="WinEditChild.h" />
+    <ClInclude Include="WinEditMain.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WINEDIT.RC" />

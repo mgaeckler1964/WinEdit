@@ -40,6 +40,7 @@
 #include "WinEditChild.h"
 
 #include <gak/string.h>
+#include <gak/directory.h>
 
 #include <WINLIB/colors.h>
 
@@ -397,20 +398,19 @@ void WinEditChild::changeReadOnly()
 	STRING fileName = getFileName();
 	if( !fileName.isEmpty() )
 	{
-		unsigned long attr = GetFileAttributes( fileName );
-		if( attr & FILE_ATTRIBUTE_READONLY )
+		bool isProtected = fisprotected( fileName );
+		if( isProtected )
 		{
-			attr &= ~FILE_ATTRIBUTE_READONLY;
+			funprotect( fileName );
 			setEditable();
 			setBackgroundColorByRef(colors::WHITE);
 		}
 		else if( !isChanged() )
 		{
-			attr |= FILE_ATTRIBUTE_READONLY;
+			fprotect( fileName );
 			setReadonly();
 			setBackgroundColorByRef(colors::LIGHT_SALMON);
 		}
-		SetFileAttributes( fileName, attr );
 		handleFocus();
 	}
 }

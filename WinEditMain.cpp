@@ -1190,7 +1190,7 @@ SuccessCode WinEditMain::create( int nCmdShow )
 	setStatusText( "Welcome" );
 	setTimer( 500 );
 
-	restoreWindowRect( "mainWindow", nCmdShow );
+	restoreWindowRect( "mainWindow", ShowWindowMode(nCmdShow) );
 
 //	hideVertScrollBar();
 //	hideHorizScrollBar();

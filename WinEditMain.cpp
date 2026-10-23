@@ -1156,7 +1156,7 @@ ProcessStatus WinEditMain::handleData(const ForeignWindow &, gak::uint64 dataTyp
 // ----- class publics ------------------------------------------------- //
 // --------------------------------------------------------------------- //
 
-SuccessCode WinEditMain::create( int nCmdShow )
+SuccessCode WinEditMain::create( ShowWindowMode nCmdShow )
 {
 	setText( APP_NAME );
 
@@ -1190,7 +1190,7 @@ SuccessCode WinEditMain::create( int nCmdShow )
 	setStatusText( "Welcome" );
 	setTimer( 500 );
 
-	restoreWindowRect( "mainWindow", ShowWindowMode(nCmdShow) );
+	restoreWindowRect( "mainWindow", nCmdShow );
 
 //	hideVertScrollBar();
 //	hideHorizScrollBar();

@@ -104,7 +104,7 @@ const char APP_NAME[] = "WinEdit";
 class WinEdit : public GuiApplication
 {
 	bool 			startApplication( HINSTANCE hInstance, const char *cmdLine ) override;
-	CallbackWindow	*createMainWindow( const char *cmdLine, int nCmdShow ) override;
+	CallbackWindow	*createMainWindow( const char *cmdLine, ShowWindowMode nCmdShow ) override;
 	void deleteMainWindow( BasicWindow  *mainWindow ) override;
 
 	public:
@@ -378,7 +378,7 @@ bool WinEdit::startApplication( HINSTANCE, const char *cmdLine )
 	return false;
 }
 
-CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, int nCmdShow )
+CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, ShowWindowMode nCmdShow )
 {
 	doEnterFunctionEx( gakLogging::llInfo, "WinEdit::createMainWindow" );
 	doLogValueEx( gakLogging::llInfo, cmdLine );

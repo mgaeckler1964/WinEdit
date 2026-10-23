@@ -167,7 +167,7 @@ class WinEditMain : public winlib::MDIwindow
 	WinEditMain();
 	~WinEditMain();
 
-	winlib::SuccessCode create( int nCmdShow );
+	winlib::SuccessCode create( winlib::ShowWindowMode nCmdShow );
 	void openFile( const gak::STRING &fileName, winlib::EDIT::EditCharset charSet=winlib::EDIT::csANSI, size_t selStart=0, size_t selEnd=0 );
 	void checkLineEnd( RLINE_ENDS lineEnd );
 	void updateFileMenu( const gak::STRING &fileName, size_t selStart, size_t selEnd );

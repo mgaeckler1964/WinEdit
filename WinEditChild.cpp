@@ -347,8 +347,8 @@ void WinEditChild::handleFocus()
 			messageBox(
 				"File Changed? Do you want to reload?",
 				"Win Edit",
-				MB_YESNO
-			) == IDYES )
+				MessageBoxFlags(mbbYesNo, mbiQUESTION)
+			) == mbrYES )
 		{
 			reloadFile();
 		}
@@ -368,12 +368,12 @@ SuccessCode WinEditChild::handleClose()
 			theFile = STRING("...") + theFile.rightString( 1021 - theMessage.strlen() );
 		}
 		theMessage.searchNreplace( "%s", !theFile.isEmpty() ? theFile : appObject->loadString( UNTITLED_id ) );
-		int button = messageBox( theMessage, WARNING_id, MB_APPLMODAL|MB_ICONSTOP|MB_YESNOCANCEL );
+		MessageBoxResult button = messageBox( theMessage, WARNING_id, MessageBoxFlags(mbbYesNoCancel, mbiQUESTION) );
 
-		if( button == IDCANCEL )
+		if( button == mbrCANCEL )
 /*@*/		return scERROR;
 
-		if( button == IDYES )
+		if( button == mbrYES )
 		{
 			mainWindow->saveFile(this);
 			if( isChanged() )

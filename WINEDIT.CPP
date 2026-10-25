@@ -388,7 +388,7 @@ CallbackWindow *WinEdit::createMainWindow( const char *cmdLine, ShowWindowMode n
 	std::unique_ptr<WinEditMain> mainWindow(new WinEditMain);
 	if( mainWindow->create( nCmdShow ) == scERROR )
 	{
-		MessageBox( nullptr, "Cannot Create Window", "Error", MB_ICONSTOP|MB_OK );
+		MessageBox( nullptr, "Cannot Create Window", "Error", MessageBoxFlags(mbbOK, mbiERROR) );
 /*@*/	return nullptr;
 	}
 

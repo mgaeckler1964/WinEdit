@@ -177,28 +177,20 @@ static void extractLines( const STRING &block, size_t lineLen, ArrayOfStrings *l
 
 static void rightJustify( ArrayOfStrings &lines, size_t lineLen )
 {
-	for(
-		ArrayOfStrings::iterator it = lines.begin(), endIT = lines.end();
-		it != endIT;
-		++it
-	)
+	lines.forEach( [=] (STRING &line)
 	{
-		if( it->size() < lineLen )
-			it->insChar(0, ' ', lineLen - it->size() );
-	}
+		if( line.size() < lineLen )
+			line.insChar(0, ' ', lineLen - line.size() );
+	});
 }
 
 static void centerJustify( ArrayOfStrings &lines, size_t lineLen )
 {
-	for(
-		ArrayOfStrings::iterator it = lines.begin(), endIT = lines.end();
-		it != endIT;
-		++it
-	)
+	lines.forEach( [=] (STRING &line)
 	{
-		if( it->size() < lineLen )
-			it->insChar(0, ' ', (lineLen - it->size())/2 );
-	}
+		if( line.size() < lineLen )
+			line.insChar(0, ' ', (lineLen - line.size())/2 );
+	});
 }
 
 static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
@@ -206,18 +198,14 @@ static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
 	if( !lines.size() )
 		return;
 
-	for(
-		ArrayOfStrings::iterator it = lines.begin(), endIT = lines.end()-1;
-		it != endIT;
-		++it
-	)
+	lines.forEach( lines.begin(), lines.end()-1, [=] (STRING &line)
 	{
-		if( it->size() < lineLen )
+		if( line.size() < lineLen )
 		{
-			size_t spaceLeft = lineLen - it->size();
+			size_t spaceLeft = lineLen - line.size();
 
 			size_t spaceCount = 0;
-			for( const char *cp = it->c_str(); *cp; ++cp )
+			for( const char *cp = line.c_str(); *cp; ++cp )
 			{
 				if( *cp == ' ' )
 				{
@@ -228,15 +216,11 @@ static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
 
 			double oneSpace = double(spaceLeft)/double(spaceCount);
 			ArrayOfStrings	words;
-			words.createElements( *it, " ", true );
+			words.createElements( line, " ", true );
 			size_t spaceAdded = 0;
 			double spaceRequired = 0;
 			STRING newLine;
-			for(
-				ArrayOfStrings::iterator it2 = words.begin(), endIT2 = words.end();
-				it2 != endIT2;
-				++it2
-			)
+			words.forEach( [&](const STRING &word )
 			{
 				if( newLine.size() )
 				{
@@ -246,26 +230,23 @@ static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
 					newLine.add( ' ', thisNewSpace );
 					spaceAdded += thisNewSpace;
 				}
-				newLine += *it2;
-			}
-			*it = newLine;
+				newLine += word;
+			});
+			line = newLine;
 		}
-	}
+	});
 }
 
 static STRING buildBlock( const ArrayOfStrings &lines )
 {
 	STRING	block;
-	for(
-		ArrayOfStrings::const_iterator it = lines.cbegin(), endIT = lines.cend();
-		it != endIT;
-		++it
-	)
+
+	lines.forEach( [&](const STRING &line) 
 	{
 		if( block.size() )
 			block += EOL_MARKER;
-		block += *it;
-	}
+		block += line;
+	});
 	return block;
 }
 

@@ -177,19 +177,21 @@ static void extractLines( const STRING &block, size_t lineLen, ArrayOfStrings *l
 
 static void rightJustify( ArrayOfStrings &lines, size_t lineLen )
 {
-	lines.forEach( [=] (STRING &line)
+	lines.forEach( [=] (STRING &line) -> bool
 	{
 		if( line.size() < lineLen )
 			line.insChar(0, ' ', lineLen - line.size() );
+		return false;
 	});
 }
 
 static void centerJustify( ArrayOfStrings &lines, size_t lineLen )
 {
-	lines.forEach( [=] (STRING &line)
+	lines.forEach( [=] (STRING &line) -> bool
 	{
 		if( line.size() < lineLen )
 			line.insChar(0, ' ', (lineLen - line.size())/2 );
+		return false;
 	});
 }
 
@@ -198,7 +200,7 @@ static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
 	if( !lines.size() )
 		return;
 
-	lines.forEach( lines.begin(), lines.end()-1, [=] (STRING &line)
+	lines.forEach( lines.begin(), lines.end()-1, [=] (STRING &line) -> bool
 	{
 		if( line.size() < lineLen )
 		{
@@ -220,7 +222,7 @@ static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
 			size_t spaceAdded = 0;
 			double spaceRequired = 0;
 			STRING newLine;
-			words.forEach( [&](const STRING &word )
+			words.forEach( [&](const STRING &word ) -> bool
 			{
 				if( newLine.size() )
 				{
@@ -231,9 +233,11 @@ static void blockJustify( ArrayOfStrings &lines, size_t lineLen )
 					spaceAdded += thisNewSpace;
 				}
 				newLine += word;
+				return false;
 			});
 			line = newLine;
 		}
+		return false;
 	});
 }
 
@@ -241,11 +245,13 @@ static STRING buildBlock( const ArrayOfStrings &lines )
 {
 	STRING	block;
 
-	lines.forEach( [&](const STRING &line) 
+	lines.forEach( [&](const STRING &line)  -> bool
 	{
 		if( block.size() )
 			block += EOL_MARKER;
 		block += line;
+
+		return false;
 	});
 	return block;
 }
